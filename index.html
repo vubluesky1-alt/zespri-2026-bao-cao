@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d6a2f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zespri BSC">
+<meta name="robots" content="noindex,nofollow">
+<title>Zespri 2026 · Báo cáo BSC Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: top bar with view selector (Overall / Week N), tabs; summary first, detail after; BSC entry tab separate */
+  --ink:#14261a; --muted:#5b695f; --paper:#f3f6ef; --card:#ffffff; --line:#dbe4d6;
+  --green:#1d6a2f; --green-2:#2f8a3f; --leaf:#e7f1de; --gold:#f2c230; --gold-soft:#fdf3cf;
+  --ok:#2e8b57; --ok-bg:#e2f3e8; --warn:#c48600; --warn-bg:#fcf0cf; --bad:#c23d2c; --bad-bg:#fbe4df; --na:#7b867e; --na-bg:#eceee8;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Be Vietnam Pro","Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+h1,h2,h3,h4{font-family:var(--display);letter-spacing:.01em;text-wrap:balance;margin:0}
+.num{font-variant-numeric:tabular-nums}
+button,select,input,textarea{font-family:inherit;font-size:14px}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+a{color:var(--green)}
+.vi{display:block;font-family:var(--body);font-size:max(11px,.62em);font-weight:500;color:var(--muted);letter-spacing:0;text-transform:none;line-height:1.3;margin-top:1px}
+.vi-i{font-family:var(--body);font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:0;text-transform:none}
+th .vi{font-size:10.5px;font-weight:500;opacity:.85}
+
+.top{background:var(--green);color:#fff;position:sticky;top:0;z-index:30}
+@media (max-width:760px){.top{position:static}}
+.top-in{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.brand{display:flex;gap:10px;align-items:center;margin-right:auto}
+.logo{height:34px;padding:0 9px;border-radius:9px;background:var(--gold);color:var(--green);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:17px}
+.brand b{font-family:var(--display);font-size:20px;letter-spacing:.02em}
+.brand small{display:block;opacity:.82;font-size:12px;line-height:1.2}
+.modesel{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.2}
+.modesel .lab{text-align:right}
+.modesel .lab small{display:block;opacity:.75;font-size:11px}
+.seg{display:flex;background:rgba(255,255,255,.14);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:#fff;border-radius:8px;padding:5px 12px;font-weight:600;line-height:1.15;text-align:left}
+.seg button small{display:block;font-size:10.5px;opacity:.8;font-weight:500}
+.seg button.on{background:#fff;color:var(--green)}
+.seg select{border:0;border-radius:8px;padding:6px 8px;font-weight:600;color:var(--green);background:#fff}
+.who .vi{color:#d9e8cf}
+.who{font-size:12px;background:rgba(255,255,255,.14);padding:5px 10px;border-radius:999px;white-space:nowrap;line-height:1.2}
+nav.main{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:60px;z-index:25}
+@media (max-width:760px){nav.main{position:static}}
+nav.main .in{max-width:1280px;margin:0 auto;padding:0 12px;display:flex;gap:2px;overflow-x:auto}
+nav.main a{padding:9px 14px 7px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap;line-height:1.2}
+nav.main a .vi{font-size:11px}
+nav.main a.on{color:var(--green);border-color:var(--green)}
+nav.main a.bsc{color:#8a5d00}
+nav.main a.bsc.on{border-color:var(--gold)}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+.view{display:none}.view.on{display:block}
+
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g21{grid-template-columns:3fr 2fr}.g12{grid-template-columns:1fr 2fr}
+@media (max-width:1050px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g21,.g12{grid-template-columns:1fr}}
+@media (max-width:640px){.g4,.g2{grid-template-columns:1fr}}
+.mt{margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.sub{color:var(--muted);font-size:12.5px;margin:-4px 0 12px}
+.src{color:var(--na);font-size:11.5px;margin-top:10px}
+.ph1{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+.ph1 h1{font-size:30px;font-weight:800;color:var(--green)}
+.ph1 h1 .vi{font-size:13px}
+.ph1 p{margin:4px 0 0;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:10px;padding:5px 12px;font-size:12.5px;color:var(--muted);line-height:1.25}
+.chip b{color:var(--ink)}
+.modebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--gold-soft);border:1px solid var(--gold);border-radius:12px;padding:8px 14px;margin-bottom:14px;font-size:13px}
+
+.headline{background:var(--green);color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.headline .tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px}
+.headline .tag .vi{color:#d9e8cf;letter-spacing:.02em}
+.headline ol{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.headline li{display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:15px;line-height:1.45}
+.headline li>span{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--green);display:grid;place-items:center;font-weight:800;font-family:var(--display);font-size:16px}
+.headline li .vi{color:#cfe2c4;font-size:12.5px;margin-top:3px}
+.headline .wk{display:inline-block;font-size:11px;font-weight:700;background:rgba(255,255,255,.16);border-radius:6px;padding:0 6px;margin-left:6px;vertical-align:1px}
+.headline .by{font-size:12px;opacity:.75;margin-top:12px}
+
+.kpi{position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--st,var(--na))}
+.kpi .lbl{font-size:12.5px;font-weight:600;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.kpi .val{font-family:var(--display);font-size:36px;font-weight:800;line-height:1.05;margin:6px 0 2px}
+.kpi .val small{font-size:16px;font-weight:600;color:var(--muted)}
+.kpi .line{font-size:12.5px;color:var(--muted)}
+.kpi .line b{color:var(--ink)}
+.bar{height:7px;background:var(--na-bg);border-radius:9px;overflow:hidden;margin:8px 0 6px;position:relative}
+.bar i{display:block;height:100%;background:var(--st,var(--green));border-radius:9px}
+.bar em{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:10px;white-space:nowrap;line-height:1.25}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.pill .vi-i{color:inherit;opacity:.8;font-weight:500;font-size:10.5px}
+.p-ok{background:var(--ok-bg);color:var(--ok)}.p-warn{background:var(--warn-bg);color:var(--warn)}.p-bad{background:var(--bad-bg);color:var(--bad)}.p-na{background:var(--na-bg);color:var(--na)}
+.up{color:var(--ok);font-weight:700}.down{color:var(--bad);font-weight:700}
+
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);font-weight:700;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap;vertical-align:bottom}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.r{text-align:right}
+tbody tr:hover td{background:#f7faf3}
+tr.click{cursor:pointer}
+td .mini{height:6px;background:var(--na-bg);border-radius:6px;overflow:hidden;min-width:70px;margin-top:5px;position:relative}
+td .mini i{display:block;height:100%}
+td .mini em{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.5}
+td.sel,th.sel{background:var(--gold-soft)}
+
+.acts{display:grid;gap:10px}
+.act{display:grid;grid-template-columns:6px 1fr;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 12px 12px 0;background:#fff}
+.act::before{content:"";background:var(--st);border-radius:0 6px 6px 0}
+.act b{display:block}
+.act .d{font-size:12.5px;color:var(--muted);margin-top:3px}
+.act .meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.act .meta b{display:inline;color:var(--ink)}
+
+.tl{display:grid;gap:8px;font-size:12.5px}
+.tl .row{display:grid;grid-template-columns:160px 1fr 170px;gap:12px;align-items:center}
+@media (max-width:760px){.tl .row{grid-template-columns:1fr}.tl .mon{display:none!important}}
+.tl .track{position:relative;height:22px;background:#f1f3ee;border-radius:6px}
+.tl .plan{position:absolute;top:0;bottom:0;border-radius:6px;background:#d9e7d2;overflow:hidden}
+.tl .done{position:absolute;left:0;top:0;bottom:0;background:var(--c);opacity:.95}
+.tl .now{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--bad)}
+.tl .mon{display:grid;grid-template-columns:160px 1fr 170px;gap:12px;color:var(--muted);font-size:11px}
+.tl .mon div:nth-child(2){display:flex;justify-content:space-between}
+.tl .st{font-size:12px;line-height:1.3}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin:4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:10px;border-radius:3px;margin-right:5px;background:var(--c);vertical-align:-1px}
+.legend span.line::before{width:2px;height:12px;background:var(--bad)}
+.nowchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+
+.side{display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:start}
+@media (max-width:900px){.side{grid-template-columns:1fr}}
+.rail{display:grid;gap:4px;position:sticky;top:120px}
+@media (max-width:900px){.rail{position:static;display:flex;overflow-x:auto}}
+.rail button{text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;white-space:nowrap;line-height:1.25}
+.rail button small{display:block;color:var(--muted);font-size:11px}
+.rail button.on{border-color:var(--green);box-shadow:inset 4px 0 0 var(--green)}
+.rail .dot{width:9px;height:9px;border-radius:50%;flex:none}
+
+.media{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.mi{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;text-align:left;padding:0;display:flex;flex-direction:column}
+.mi img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--leaf)}
+.mi.layout img{aspect-ratio:16/9}
+.mi div{padding:8px 10px;font-size:12.5px}
+.mi div b{display:block;line-height:1.3}
+.mi div .m{color:var(--muted);font-size:11.5px;display:block;margin-top:2px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.filters select,.filters input{border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:#fff;min-width:130px}
+.filters input{flex:1;min-width:180px}
+.lb{position:fixed;inset:0;background:rgba(10,20,13,.88);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:10px}
+.lb.on{display:flex}
+.lb img{max-width:100%;max-height:78vh;border-radius:10px}
+.lb .cap{color:#fff;text-align:center;font-size:13px}
+.lb .nav{display:flex;gap:8px}
+.lb button{background:#fff;border:0;border-radius:9px;padding:8px 14px;font-weight:700;color:var(--green)}
+
+.mk{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.mk .t{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.mk p{margin:6px 0 0;font-size:13px}
+.mk .w{font-size:11px;color:var(--muted)}
+
+.sb{display:grid;gap:9px}
+.sb .row{display:grid;grid-template-columns:110px 1fr 80px;gap:10px;align-items:center;font-size:13px}
+.sb .stk{display:flex;height:18px;border-radius:5px;overflow:hidden;background:var(--na-bg)}
+.sb .stk i{display:block;height:100%}
+
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.subnav button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:6px 14px;font-weight:600;color:var(--ink);line-height:1.2}
+.subnav button .vi{font-size:10.5px}
+.subnav button.on{background:var(--gold);border-color:var(--gold);color:var(--green)}
+.form{display:grid;gap:12px}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:700px){.fg2{grid-template-columns:1fr}}
+.f label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.25}
+.f label .vi{font-size:11px}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff}
+.f textarea{min-height:60px;resize:vertical}
+.f small{color:var(--muted);font-size:11px}
+.btn{border:0;border-radius:10px;padding:8px 14px;font-weight:700;background:var(--green);color:#fff;line-height:1.2}
+.btn .vi{color:inherit;opacity:.8;font-size:10.5px}
+.btn.sec{background:#fff;color:var(--green);border:1px solid var(--green)}
+.btn.gold{background:var(--gold);color:var(--green)}
+.btn.bad{background:#fff;color:var(--bad);border:1px solid var(--bad)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sect{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+.sect h4{font-size:18px;color:var(--green);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.msg{font-size:12.5px;border-radius:8px;padding:7px 10px;margin-top:6px}
+.msg.e{background:var(--bad-bg);color:var(--bad)}.msg.w{background:var(--warn-bg);color:#8a5d00}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;z-index:70;font-size:13px;display:none}
+.toast.on{display:block}
+.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px;background:#fff}
+.notice{background:var(--gold-soft);border:1px solid var(--gold);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+.ed-table input,.ed-table select{border:1px solid var(--line);border-radius:7px;padding:5px 7px;width:100%;min-width:70px;background:#fff}
+.foot{color:var(--na);font-size:12px;margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+.note-list{display:grid;gap:8px}
+.note-list div{border-left:3px solid var(--gold);padding:2px 0 2px 10px;font-size:13px}
+nav.main a,.subnav button,.rail button>span{text-transform:uppercase;letter-spacing:.03em}
+.rail button small{text-transform:uppercase}
+.srch{max-width:1280px;margin:0 auto;padding:8px 12px 10px;display:flex;gap:8px;align-items:center}
+.srch .box{flex:1;display:flex;align-items:center;gap:8px;border:2px solid var(--green);border-radius:12px;background:#fff;padding:0 10px}
+.srch .box svg{flex:none}
+.srch input{flex:1;border:0;outline:0;padding:10px 4px;font-size:15px;background:transparent;min-width:0}
+.srch .clr{border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:4px}
+.srch .ai{border:0;border-radius:12px;background:var(--gold);color:var(--green);font-weight:800;padding:11px 14px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.srch .ai small{display:block;font-size:10px;font-weight:600;opacity:.8}
+.wkchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.wkchips button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 14px;font-weight:800;color:var(--ink);text-align:left;text-transform:uppercase;letter-spacing:.03em;line-height:1.2}
+.wkchips button small{display:block;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;margin-top:2px}
+.wkchips button.on{background:var(--green);border-color:var(--green);color:#fff}
+.wkchips button.on small{color:#d9e8cf}
+.sr-grp{margin-top:16px}
+.sr-grp h4{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--green);margin-bottom:8px}
+.sr-list{display:grid;gap:8px}
+.sr{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;width:100%;font:inherit;color:inherit}
+.sr:hover{border-color:var(--green)}
+.sr b{display:block}
+.sr .m{font-size:12.5px;color:var(--muted)}
+.sr .v{font-family:var(--display);font-size:22px;font-weight:800;color:var(--green);text-align:right;white-space:nowrap}
+.sr .v small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted)}
+.sr img{width:64px;height:48px;object-fit:cover;border-radius:6px}
+.answer{background:var(--green);color:#fff;border-radius:14px;padding:14px 16px}
+.answer .tag{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:700;margin-bottom:8px}
+.answer .row{display:flex;flex-wrap:wrap;gap:8px 22px}
+.answer .it b{font-family:var(--display);font-size:30px;display:block;line-height:1.05}
+.answer .it span{font-size:12.5px;color:#d9e8cf}
+.aibox{background:#fff;border:2px solid var(--gold);border-radius:14px;padding:14px 16px;white-space:pre-wrap;font-size:14px;line-height:1.55}
+.aibox .tag{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#8a5d00;font-weight:800;margin-bottom:6px;white-space:normal}
+.hint{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hint button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12.5px;color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><div class="logo">BSC</div><div><b>ZESPRI 2026 · BÁO CÁO CHƯƠNG TRÌNH</b><small>Programme report · BSC Field · Zespri Full-Year Campaign Nationwide</small></div></div>
+  <div class="modesel"><div class="lab">Xem báo cáo<small>Report view</small></div><div class="seg" id="modeSeg"></div></div>
+  <span class="who" id="who2" style="cursor:pointer" title="Đổi mã truy cập" onclick="__gasLogout()"></span><span class="who" id="who" hidden>Loading…</span>
+</div></header>
+<nav class="main" aria-label="Navigation"><div class="in" id="nav">
+  <a href="#tong" data-v="tong">Tổng cộng<span class="vi">Overall</span></a>
+  <a href="#tuan" data-v="tuan">Tuần này<span class="vi">This week</span></a>
+  <a href="#dashboard" data-v="dashboard">Biểu đồ<span class="vi">Dashboard</span></a>
+  <a href="#chitiet" data-v="chitiet">Chi tiết loại hình<span class="vi">Activity detail</span></a>
+  <a href="#thuvien" data-v="thuvien">Thư viện ảnh &amp; layout<span class="vi">Photos &amp; layouts</span></a>
+  <a href="#thitruong" data-v="thitruong">Thị trường<span class="vi">Market</span></a>
+  <a href="#nhaplieu" data-v="nhaplieu" class="bsc" id="navInput" hidden>BSC nhập liệu<span class="vi">BSC data entry</span></a>
+</div>
+<div class="srch" role="search"><div class="box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d6a2f" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" autocomplete="off" placeholder="Tra cứu bất kỳ · Search anything: người dùng mới, store chưa lắp Hà Nội, Aeon Tân Phú, layout booth, tuần 20…" aria-label="Search · Tra cứu"><button class="clr" id="qClr" aria-label="Clear search" hidden>×</button></div><button class="ai" id="askAI" hidden>Hỏi AI<small>Ask AI</small></button></div></nav>
+
+<main class="wrap">
+  <div id="status"></div>
+  <section class="view" id="v-tong"></section>
+  <section class="view" id="v-tuan"></section>
+  <section class="view" id="v-timkiem"></section>
+  <section class="view" id="v-dashboard"></section>
+  <section class="view" id="v-chitiet"></section>
+  <section class="view" id="v-thuvien"></section>
+  <section class="view" id="v-thitruong"></section>
+  <section class="view" id="v-nhaplieu"></section>
+  <p class="foot">Zespri Vietnam × Blue Sky Corporation (BSC). Figures are entered and approved by BSC; Zespri views them live. BSC contact: Loan Phạm, 0903 640 100.<span class="vi">Số liệu do BSC nhập và duyệt, khách hàng xem trực tiếp.</span></p>
+</main>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer"><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><div class="nav"><button id="lbPrev">← Prev</button><button id="lbClose">Close</button><button id="lbNext">Next →</button></div></div>
+<div class="toast" id="toast"></div>
+
+<style>
+#gate{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#1d6a2f,#14261a);display:none;align-items:center;justify-content:center;padding:20px}
+#gate .box{background:#fff;border-radius:18px;padding:26px 24px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);font-family:var(--body)}
+#gate h2{font-family:var(--display);font-size:26px;color:#1d6a2f;margin:10px 0 2px}
+#gate p{color:#5b695f;margin:0 0 16px;font-size:13.5px}
+#gate input{width:100%;border:1.5px solid #dbe4d6;border-radius:10px;padding:12px 14px;font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+#gate button{width:100%;margin-top:12px;border:0;border-radius:10px;padding:12px;font-weight:700;font-size:15px;background:#f2c230;color:#1d6a2f;cursor:pointer}
+#gMsg{color:#c23d2c;font-size:13px;min-height:18px;margin-top:10px}
+</style>
+<div id="gate" role="dialog" aria-modal="true" aria-label="Nhập mã truy cập"><form class="box" id="gForm"><div class="logo" style="display:inline-grid">BSC</div><h2>ZESPRI 2026 · BÁO CÁO</h2><p>Nhập mã truy cập do BSC cấp để xem báo cáo. Máy này sẽ nhớ mã cho lần sau.<br><span style="font-size:12px">Enter the access code provided by BSC.</span></p><label for="gCode" style="font-size:12px;font-weight:600;color:#5b695f">Mã truy cập · Access code</label><input id="gCode" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="submit">VÀO XEM BÁO CÁO</button><div id="gMsg" role="alert"></div><p style="margin:12px 0 0;font-size:11.5px">Chưa có mã? Liên hệ BSC: Loan Phạm, 0903 640 100.</p></form></div>
+<script>
+/* ===== Lớp kết nối Google Apps Script (thay cho Claude) ===== */
+(function(){
+  var KEY='zespri_bsc_code';
+  var store={}, listeners=[], code='', role='viewer', name='', loaded=false, readyRes, ready=new Promise(function(r){readyRes=r});
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+  var API='https://script.google.com/macros/s/AKfycbyuT-B8uOB02oxVSAgAkje2HZvLJfQtqZICyVdqt_s8xL1FUg0J0Ktsj_ysxE1JUyOgbg/exec';
+  function mapErr(m){return {code:/NO_WRITE/.test(m)?'invalid_argument':/BAD_CODE|NO_CODE/.test(m)?'revoked':'unavailable',message:m}}
+  function run(fn){var a=[].slice.call(arguments,1);
+    if(window.google&&google.script&&google.script.run){return new Promise(function(res,rej){var r=google.script.run.withSuccessHandler(res).withFailureHandler(function(e){rej(mapErr((e&&e.message)||String(e)))});r[fn].apply(r,a)})}
+    return fetch(API,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:fn,args:a})})
+      .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()},function(e){throw mapErr('NET '+e)})
+      .then(function(j){if(!j.ok)throw mapErr(j.error);return j.data},function(e){throw (e&&e.code)?e:mapErr(String(e))})}
+  window.__gasRun=run;
+  function clone(o){return JSON.parse(JSON.stringify(o))}
+  function snap(p){var d=store[p];return {id:p.split('/').pop(),exists:!!d,data:function(){return d?d.data:undefined},metadata:{fromCache:false,hasPendingWrites:false}}}
+  function inColl(p,c){return p.indexOf(c+'/')===0&&p.split('/').length===c.split('/').length+1}
+  function qsnap(c){var docs=Object.keys(store).filter(function(p){return inColl(p,c)}).sort().map(snap);return {docs:docs,size:docs.length,empty:!docs.length,metadata:{fromCache:false},docChanges:function(){return []}}}
+  function notify(){listeners.slice().forEach(function(f){try{f()}catch(e){console.error(e)}})}
+  function apply(r){store={};Object.keys(r.docs||{}).forEach(function(p){store[p]=r.docs[p]});role=r.role;name=r.name||'';loaded=true;notify()}
+  async function load(){apply(await run('getAll',code))}
+  function docRef(p){return {id:p.split('/').pop(),path:p,
+    get:async function(){return snap(p)},
+    set:async function(d){store[p]={data:clone(d)};notify();await run('setDoc',code,p,JSON.stringify(d))},
+    update:async function(d){var cur=store[p]?clone(store[p].data):{};Object.keys(d).forEach(function(k){cur[k]=d[k]});return this.set(cur)},
+    delete:async function(){delete store[p];notify();await run('setDoc',code,p,null)},
+    onSnapshot:function(n){var f=function(){n(snap(p))};listeners.push(f);if(loaded)setTimeout(f,0);return function(){listeners=listeners.filter(function(x){return x!==f})}},
+    collection:function(s){return collRef(p+'/'+s)}}}
+  function collRef(c){return {path:c,
+    doc:function(id){return docRef(c+'/'+(id||('m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6))))},
+    add:async function(d){var r=this.doc();await r.set(d);return r},
+    onSnapshot:function(n){var f=function(){n(qsnap(c))};listeners.push(f);if(loaded)setTimeout(f,0);return function(){listeners=listeners.filter(function(x){return x!==f})}},
+    get:async function(){return qsnap(c)},where:function(){return this},orderBy:function(){return this},limit:function(){return this}}}
+  var db={doc:docRef,collection:collRef};
+  var user={canEdit:function(){return role==='editor'},isOwner:function(){return false},can:function(){return role==='editor'},id:async function(){return code},me:async function(){return {id:code,name:name}}};
+  function resize(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onerror=rej;fr.onload=function(){var img=new Image();img.onerror=function(){res({b64:String(fr.result).split(',')[1],mime:file.type||'image/jpeg'})};img.onload=function(){var M=1600,w=img.width,h=img.height,s=Math.min(1,M/Math.max(w,h));var cv=document.createElement('canvas');cv.width=Math.round(w*s);cv.height=Math.round(h*s);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);res({b64:cv.toDataURL('image/jpeg',0.82).split(',')[1],mime:'image/jpeg'})};img.src=fr.result};fr.readAsDataURL(file)})}
+  var assets={upload:async function(file){var r=await resize(file);var o=await run('uploadImage',code,(file.name||'anh').replace(/\.[^.]+$/,'')+'.jpg',r.mime,r.b64);return {id:o.id,url:'gdrive:'+o.id}},delete:async function(id){return run('deleteImage',code,id)},list:async function(){return {assets:[]}}};
+  window.claude={use:async function(n){await ready;return n==='db'?db:n==='user'?user:n==='assets'?(role==='editor'?assets:null):null}};
+  /* ảnh từ Drive: thay src "gdrive:ID" bằng ảnh thật */
+  var IMG={},PEND={},BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  function hyd(el){var s=el.getAttribute('src')||'';if(s.indexOf('gdrive:')!==0)return;var id=s.slice(7);el.setAttribute('data-fid',id);if(IMG[id]){el.src=IMG[id];return}el.src=BLANK;
+    (PEND[id]=PEND[id]||run('getImage',code,id).then(function(u){IMG[id]=u;return u})).then(function(u){document.querySelectorAll('img[data-fid="'+id+'"]').forEach(function(x){if(x.getAttribute('src')===BLANK||!x.getAttribute('src'))x.src=u})}).catch(function(){})}
+  new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='attributes'&&m.target.tagName==='IMG')hyd(m.target);(m.addedNodes||[]).forEach(function(n){if(n.nodeType!==1)return;if(n.tagName==='IMG')hyd(n);n.querySelectorAll&&n.querySelectorAll('img').forEach(hyd)})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src']});
+  /* màn hình nhập mã truy cập */
+  function gate(msg){var g=document.getElementById('gate');g.style.display='flex';document.getElementById('gMsg').textContent=msg||'';var i=document.getElementById('gCode');i.value='';setTimeout(function(){i.focus()},50)}
+  async function tryCode(c){code=String(c||'').trim();if(!code){gate('');return}
+    document.getElementById('gMsg').textContent='Đang kiểm tra…';
+    try{await load();ls(KEY,code);document.getElementById('gate').style.display='none';document.getElementById('who2').textContent=(role==='editor'?'BSC · nhập liệu':'Chỉ xem')+(name?' · '+name:'');readyRes();
+      setInterval(function(){if(!document.hidden)load().catch(function(){})},90000)}
+    catch(e){ls(KEY,null);gate(e.code==='revoked'?'Mã truy cập không đúng hoặc đã bị khóa. Liên hệ BSC để được cấp mã.':'Chưa kết nối được. Kiểm tra mạng rồi thử lại.')}}
+  window.__gasLogout=function(){ls(KEY,null);try{if(window.google&&google.script)window.open('https://script.google.com/macros/s/AKfycbyuT-B8uOB02oxVSAgAkje2HZvLJfQtqZICyVdqt_s8xL1FUg0J0Ktsj_ysxE1JUyOgbg/exec','_top');else location.reload()}catch(e){gate('')}};
+  document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('gForm').addEventListener('submit',function(e){e.preventDefault();tryCode(document.getElementById('gCode').value)});
+    var saved=ls(KEY);if(saved)tryCode(saved);else gate('');
+  });
+})();
+
+</script>
+<script>
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(n,d=0)=>(n==null||n===''||isNaN(n))?'–':Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(n,d=0)=>(n==null||!isFinite(n))?'–':fmt(n*100,d)+'%';
+const dd=s=>{if(!s)return'';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`};
+const ds=s=>dd(s).slice(0,5);
+const DAY=864e5, toD=s=>new Date(s+'T00:00:00');
+const L=(en,vi)=>vi?`${vi}<span class="vi">${en}</span>`:`${en}`;
+const Li=(en,vi)=>vi?`${vi} <span class="vi-i">${en}</span>`:`${en}`;
+const tx=o=>{if(o==null)return{en:'',vi:''};if(typeof o==='string')return{en:o,vi:''};return{en:o.en||'',vi:o.vi||''}};
+const BT=o=>{const t=tx(o);const a=t.vi||t.en;return `${esc(a)}${t.en&&t.vi?`<span class="vi">${esc(t.en)}</span>`:''}`};
+const stOf=r=>r==null||!isFinite(r)?'na':(r>=0.95?'ok':(r>=0.85?'warn':'bad'));
+const ST={ok:['On track','Đạt'],warn:['Watch','Theo dõi'],bad:['Needs improvement','Cần cải thiện'],na:['Not measured','Chưa đo']};
+const STATUS={running:['warn','In progress','Đang chạy'],upcoming:['na','Not started','Chưa đến lịch'],prep:['na','Preparing','Chuẩn bị'],done:['ok','Completed','Hoàn thành'],late:['bad','Data overdue','Trễ dữ liệu'],paused:['na','Paused','Tạm dừng']};
+const pill=(s,en,vi)=>`<span class="pill p-${s}">${esc(vi||en)}</span>`;
+const stPill=s=>pill(s,ST[s][0],ST[s][1]);
+const sv=s=>`var(--${s})`;
+const colorOf=s=>({ok:'#2e8b57',warn:'#c48600',bad:'#c23d2c',na:'#9aa59c'})[s];
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2800)};
+const CHAINS={'WINMART':'WinMart','BIG C':'Big C / GO!','COOP':'Co.opMart','AEON':'AEON','COOP EXTRA':'Co.op Extra','LOTTE':'Lotte','EMART':'Emart','MEGA':'Mega'};
+const REG={NORTH:['North','Miền Bắc'],CENTRAL:['Central','Miền Trung'],SOUTH:['South','Miền Nam']};
+const PS={ok:['ok','Installed','Đã lắp'],fail:['bad','Blocked','Không lắp được'],todo:['na','Not yet','Chưa triển khai']};
+
+/* ============ state ============ */
+const S={db:null,user:null,assets:null,canEdit:false,plan:null,weeks:{},stores:{},media:[],loaded:{plan:false,weeks:false},mode:'all',detail:'sampling',inputTab:'week',lib:{kind:'',type:'',chain:'',q:''},storeF:{chain:'',s:'',r:'',q:''},editWeek:null,storeEdits:{}};
+let renderT=null;const render=()=>{clearTimeout(renderT);renderT=setTimeout(renderAll,30)};
+
+/* ============ data model ============ */
+const weekList=()=>Object.values(S.weeks).filter(w=>S.canEdit||w.status==='published').sort((a,b)=>a.week-b.week);
+const latest=()=>{const l=weekList();return l[l.length-1]||null};
+const isAll=()=>S.mode==='all';
+const selWeek=()=>{if(isAll())return latest();return weekList().find(w=>w.week===S.mode)||latest()};
+const prevWeek=w=>{const l=weekList().filter(x=>x.week<w.week);return l[l.length-1]||null};
+const cum=(tk,k,w)=>w?.types?.[tk]?.m?.[k];
+function wkVal(tk,k,w){const o=w?.wk?.[tk]?.[k];if(o!=null)return o;const c=cum(tk,k,w);if(c==null)return null;const p=prevWeek(w);if(!p)return null;const pc=cum(tk,k,p);if(pc==null)return null;return c-pc}
+const val=(tk,k,w)=>isAll()?cum(tk,k,w):wkVal(tk,k,w);
+const allStores=()=>Object.values(S.stores).flatMap(d=>(d.list||[]).map(x=>({...x,chain:d.chain})));
+const mediaSrc=m=>m.assetId?('gdrive:'+m.assetId):(m.file||'');
+const planDays=T=>Math.round((toD(T.end)-toD(T.start))/DAY)+1;
+function elapsed(T,asOf){if(!T.start||!T.end||!asOf)return null;const a=toD(T.start),b=toD(T.end),n=toD(asOf);if(n<a)return 0;if(n>=b)return 1;return ((n-a)/DAY+1)/planDays(T)}
+const mLabel=m=>Li(esc(m.l),esc(m.lv||''));
+const mUnit=m=>Li(esc(m.u),esc(m.uv||''));
+function evalM(tk,m,w){
+  const T=S.plan.types[tk],c=cum(tk,m.k,w),wv=wkVal(tk,m.k,w);
+  const r={c,wv,plan:m.plan,done:(c!=null&&m.plan)?c/m.plan:null,exp:elapsed(T,w.to),ratio:null,mode:'pace'};
+  if(m.perDay&&T.perDayBase){const pd=T.metrics.find(x=>x.k===T.perDayBase).plan;
+    const base=isAll()?cum(tk,T.perDayBase,w):wkVal(tk,T.perDayBase,w), v=isAll()?c:wv;
+    if(v!=null&&base){r.mode='perday';r.actDay=v/base;r.planDay=m.plan/pd;r.ratio=r.actDay/r.planDay}
+    else if(c!=null&&cum(tk,T.perDayBase,w)){r.mode='perday';r.actDay=c/cum(tk,T.perDayBase,w);r.planDay=m.plan/pd;r.ratio=r.actDay/r.planDay;r.fallback=true}}
+  else if(r.done!=null&&r.exp&&!m.noPace)r.ratio=r.done/r.exp;
+  return r}
+const mainM=tk=>{const T=S.plan.types[tk];return T.metrics.find(x=>x.main)||T.metrics[0]};
+function tStatus(tk,w){const T=S.plan.types[tk],ts=w.types?.[tk]||{};
+  if(ts.status==='done')return {s:'ok',en:'Completed',vi:'Hoàn thành'};
+  if(ts.status==='late')return {s:'bad',en:'Data overdue',vi:'Trễ dữ liệu'};
+  if(ts.status==='upcoming'||ts.status==='prep'||elapsed(T,w.to)===0){const x=STATUS[ts.status==='prep'?'prep':'upcoming'];return {s:'na',en:x[1],vi:x[2]}}
+  const rs=T.metrics.map(m=>evalM(tk,m,w).ratio).filter(x=>x!=null&&isFinite(x));
+  if(!rs.length)return {s:'na',en:'No figures yet',vi:'Chưa có số'};
+  const s=stOf(Math.min(...rs));return {s,en:ST[s][0],vi:ST[s][1]}}
+/* overall aggregations */
+const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+function headlinesFor(){if(!isAll()){const w=selWeek();return (w.headline||[]).map(h=>({h:tx(h),wk:w.week})).filter(x=>x.h.en||x.h.vi)}
+  const seen=new Set(),out=[];weekList().slice().reverse().forEach(w=>(w.headline||[]).forEach(h=>{const t=tx(h);const k=norm(t.vi||t.en);if(!k||seen.has(k))return;seen.add(k);out.push({h:t,wk:w.week})}));return out}
+function actionsFor(){if(!isAll())return (selWeek().actions||[]).map(a=>({...a,wk:selWeek().week}));
+  const m=new Map();weekList().forEach(w=>(w.actions||[]).forEach(a=>{const k=norm(tx(a.t).en||tx(a.t).vi);if(k)m.set(k,{...a,wk:w.week})}));return [...m.values()].filter(a=>a.s!=='ok')}
+function marketFor(){if(!isAll())return (selWeek().market||[]).map(x=>({...x,wk:selWeek().week}));
+  const m=new Map();weekList().forEach(w=>(w.market||[]).forEach(x=>{const k=norm(x.b)+'|'+norm(tx(x.x).en||tx(x.x).vi);m.set(k,{...x,wk:w.week})}));return [...m.values()].reverse()}
+function chainsFor(){if(!isAll())return selWeek().types?.sampling?.chains||[];const m={};weekList().forEach(w=>(w.types?.sampling?.chains||[]).forEach(c=>{const o=m[c[0]]||(m[c[0]]=[c[0],0,0,0,0]);for(let i=1;i<5;i++)o[i]+=Number(c[i]||0)}));return Object.values(m)}
+function mediaFor(list){if(isAll())return list;const w=selWeek();return list.filter(m=>m.date&&m.date>=w.from&&m.date<=w.to)}
+const viewLabel=()=>isAll()?Li('Overall programme','Tổng cộng'):Li(`Week ${selWeek().week}`,`Tuần ${selWeek().week}`);
+
+/* ============ boot ============ */
+async function boot(){
+  renderAll();
+  const C=(typeof claude!=='undefined'&&claude&&claude.use)?claude:{use:async()=>null};
+  try{S.user=await C.use('user')}catch(e){S.user=null}
+  const timer=setTimeout(()=>{if(!S.loaded.plan)$('#status').innerHTML=`<div class="notice">${L('Cannot reach the data yet. The page updates by itself once connected.','Chưa kết nối được dữ liệu. Trang sẽ tự cập nhật khi kết nối lại.')}</div>`},10000);
+  try{S.canEdit=S.user?!!(await Promise.resolve(S.user.canEdit())):false}catch(e){S.canEdit=false}
+  $('#who').innerHTML=S.canEdit?L('BSC · can edit','BSC · quyền nhập liệu'):L('Client · view only','Khách hàng · chỉ xem');
+  $('#navInput').hidden=!S.canEdit;route();
+  if(S.canEdit){try{S.assets=await C.use('assets')}catch(e){S.assets=null}}
+  S.sample=null;
+  if($('#q').value.trim())$('#askAI').hidden=!S.sample;
+  let db=null;try{db=await C.use('db')}catch(e){db=null}
+  S.db=db;
+  if(!db){clearTimeout(timer);$('#status').innerHTML=`<div class="notice">${L('Enter your access code to load the figures.','Nhập mã truy cập để tải số liệu.')}</div>`;return}
+  const err=e=>{$('#status').innerHTML=`<div class="notice">${L('Data connection lost ('+esc(e.code)+'). Reload the page to reconnect.','Mất kết nối dữ liệu. Tải lại trang để kết nối lại.')}</div>`};
+  db.doc('app/plan').onSnapshot(s=>{S.plan=s.exists?s.data():null;S.loaded.plan=true;if(!s.metadata.fromCache){clearTimeout(timer);$('#status').innerHTML=''}render()},err);
+  db.collection('weeks').onSnapshot(q=>{S.weeks={};q.docs.forEach(d=>S.weeks[d.id]={...d.data(),_id:d.id});S.loaded.weeks=true;render()},err);
+  db.collection('stores').onSnapshot(q=>{S.stores={};q.docs.forEach(d=>S.stores[d.id]={...d.data(),_id:d.id});render()},err);
+  db.collection('media').onSnapshot(q=>{S.media=q.docs.map(d=>({...d.data(),_id:d.id}));render()},err);
+}
+
+/* ============ routing ============ */
+const VIEWS=['tong','tuan','dashboard','chitiet','thuvien','thitruong','nhaplieu','timkiem'];
+function route(){let v=(__h||'#tong').slice(1);if(v.startsWith('chitiet-')){S.detail=v.slice(8);v='chitiet'}if(!VIEWS.includes(v)||(v==='nhaplieu'&&!S.canEdit))v='tong';
+  if(v==='tong')S.mode='all';
+  if(v==='tuan'){const L2=weekList();S.mode=(S.wkSel&&L2.some(x=>x.week===S.wkSel))?S.wkSel:(L2.length?L2[L2.length-1].week:'all')}
+  if(v!=='timkiem'){S.lastView=v}else if(!$('#q').value.trim()){v=S.lastView||'tong'}
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));S.view=v;render()}
+let __h='';function go(h){__h='#'+String(h||'tong').replace(/^#/,'');route();window.scrollTo(0,0)}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;e.preventDefault();go(a.getAttribute('href'))},true);
+window.addEventListener('error',e=>{let b=document.getElementById('errBar');if(!b){b=document.createElement('div');b.id='errBar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#b00020;color:#fff;padding:8px 12px;border-radius:8px;font:12px/1.4 monospace';document.body.appendChild(b)}b.textContent='Lỗi: '+(e.message||e.error)+' @'+(e.lineno||'')});
+
+/* ============ render root ============ */
+function renderMode(){const L2=weekList();
+  $('#modeSeg').innerHTML=`<button data-m="all" class="${isAll()?'on':''}">Tổng cộng<small>Overall</small></button><select id="wkPick" aria-label="Week"><option value="">Chọn tuần · Week…</option>${L2.slice().reverse().map(w=>`<option value="${w.week}" ${S.mode===w.week?'selected':''}>Tuần ${w.week} · ${ds(w.from)}–${ds(w.to)}${w===latest()?' (tuần này)':''}${w.status!=='published'?' (nháp)':''}</option>`).join('')}</select>`;
+  $('#modeSeg').querySelector('[data-m=all]').onclick=()=>{S.mode='all';if(S.view==='tuan')go('tong');else render()};
+  $('#wkPick').onchange=e=>{if(e.target.value){S.mode=S.wkSel=+e.target.value;if(S.view==='tong')go('tuan');else render()}}}
+function renderAll(){
+  const v=S.view||'tong';
+  if(v==='tuan'&&isAll()&&weekList().length)S.mode=S.wkSel||latest().week;
+  if(v==='tong')S.mode='all';
+  renderMode();
+  if(!(S.loaded.plan&&S.loaded.weeks)){$('#v-'+v).innerHTML=`<div class="empty">${L('Loading figures…','Đang tải số liệu…')}</div>`;return}
+  if(!S.plan&&v!=='nhaplieu'){$('#v-'+v).innerHTML=`<div class="empty">${L('No campaign plan yet.','Chưa có kế hoạch chiến dịch.')}</div>`;return}
+  const w=selWeek();
+  if(v!=='nhaplieu'&&!w){$('#v-'+v).innerHTML=`<div class="empty">${L('No weekly report has been published yet.','Chưa có báo cáo tuần nào được công bố.')}</div>`;return}
+  ({tong:vTong,tuan:vTong,dashboard:vDash,chitiet:vDetail,thuvien:vLib,thitruong:vMarket,nhaplieu:vInput,timkiem:vSearch})[v](w);
+}
+function modeBar(w){return isAll()?`<div class="modebar">${pill('warn','Overall','Tổng cộng')}<span>${Li(`Cumulative from programme start to ${dd(w.to)} (latest: week ${w.week}). Key points merge all weeks, duplicates removed.`,`Lũy kế từ đầu chương trình đến ${dd(w.to)}. Câu chốt gộp tất cả các tuần, bỏ ý trùng.`)}</span></div>`
+  :`<div class="modebar">${pill('warn','Week '+w.week,'Tuần '+w.week)}<span>${Li(`Figures for ${dd(w.from)} – ${dd(w.to)} only. Cumulative totals shown alongside.`,`Số riêng của tuần này. Số lũy kế hiện kèm bên cạnh.`)}</span></div>`}
+
+/* ============ components ============ */
+function kpiTile(label,val,s,bar,lines,mark){
+  return `<div class="card kpi" style="--st:${sv(s)}"><div class="lbl"><span>${label}</span>${stPill(s)}</div><div class="val num">${val}</div><div class="bar" style="--st:${sv(s)}"><i style="width:${Math.max(0,Math.min(bar||0,1))*100}%"></i>${mark!=null?`<em style="left:${Math.min(mark,1)*100}%"></em>`:''}</div>${lines.map(l=>`<div class="line">${l}</div>`).join('')}</div>`}
+function headlineBlock(w){const H=headlinesFor();if(!H.length)return'';
+  return `<div class="headline"><div class="tag">${isAll()?`Câu chốt tổng hợp tất cả các tuần<span class="vi">Key points · all weeks · duplicates removed</span>`:`3 câu chốt tuần ${w.week} · nhận định BSC<span class="vi">Key points · week ${w.week}</span>`}</div><ol>${H.map((x,i)=>{const sp=s=>{const p=String(s).split('. ');const f=p.shift();return `<b>${esc(f)}${p.length?'.':''}</b> ${esc(p.join('. '))}`};
+    return `<li><span>${i+1}</span><div>${sp(x.h.vi||x.h.en)}${isAll()?`<span class="wk">W${x.wk}</span>`:''}${x.h.en&&x.h.vi?`<span class="vi">${esc(x.h.en)}</span>`:''}</div></li>`}).join('')}</ol><div class="by">${esc(w.author||'BSC')} · ${Li('report date '+dd(w.reportDate),'ngày báo cáo')}</div></div>`}
+function actionsHtml(list){if(!list||!list.length)return `<div class="empty">${L('Nothing open.','Không có việc tồn đọng.')}</div>`;
+  return `<div class="acts">${list.map(x=>`<div class="act" style="--st:${sv(x.s||'warn')}"><div><b>${BT(x.t)}</b><div class="d">${BT(x.d)}</div><div class="meta"><span>Phụ trách <span class="vi-i">Owner</span>: <b>${esc(x.o)}</b></span><span>Hạn <span class="vi-i">Due</span>: <b>${dd(x.dl)}</b></span>${isAll()&&x.wk?`<span>W${x.wk}</span>`:''}${x.type&&S.plan.types[x.type]?`<span><a href="#chitiet-${x.type}">${esc(S.plan.types[x.type].name)}</a></span>`:''}</div></div></div>`).join('')}</div>`}
+function hbars(items,max,opt={}){const W=opt.W||520,rowH=34,x0=opt.x0||130,xw=W-x0-80,H=items.length*rowH+(opt.axis?26:6);const sc=v=>x0+Math.max(0,Math.min(v/max,1))*xw;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(opt.label||'Chart')}">`;
+  if(opt.axis)opt.axis.forEach(g=>{s+=`<line x1="${sc(g)}" x2="${sc(g)}" y1="2" y2="${H-22}" stroke="${g===opt.ref?'#1d6a2f':'#dbe4d6'}" ${g===opt.ref?'stroke-dasharray="4 3"':''}/><text x="${sc(g)}" y="${H-6}" font-size="11" text-anchor="middle" fill="#5b695f">${opt.axisFmt?opt.axisFmt(g):g}</text>`});
+  items.forEach((it,i)=>{const y=4+i*rowH;s+=`<text x="${x0-8}" y="${y+14}" font-size="12.5" text-anchor="end" fill="#14261a">${esc(it.l)}</text>${it.lv?`<text x="${x0-8}" y="${y+27}" font-size="10" text-anchor="end" fill="#5b695f">${esc(it.lv)}</text>`:''}<rect x="${x0}" y="${y+5}" width="${Math.max(sc(it.v)-x0,1)}" height="18" rx="4" fill="${it.c||'#2f8a3f'}"/>${it.m!=null?`<line x1="${sc(it.m)}" x2="${sc(it.m)}" y1="${y+1}" y2="${y+27}" stroke="#14261a" stroke-width="2" opacity=".6"/>`:''}<text x="${Math.max(sc(it.v),it.m!=null?sc(it.m):0)+6}" y="${y+18}" font-size="12.5" font-weight="700" fill="${it.c||'#14261a'}">${esc(it.t)}</text>`});
+  return s+'</svg>'}
+
+/* ============ THIS WEEK ============ */
+function weekChips(w){const L2=weekList().slice().reverse();
+  return `<div class="wkchips" role="tablist" aria-label="Week">${L2.map((x,i)=>`<button data-wk="${x.week}" class="${x.week===w.week?'on':''}" role="tab" aria-selected="${x.week===w.week}">${i===0?`TUẦN NÀY · This week`:`TUẦN ${x.week} · Week ${x.week}`}<small>${i===0?`Tuần ${x.week} · `:''}từ ${dd(x.from)} đến ${dd(x.to)}${x.status!=='published'?' · nháp':''}</small></button>`).join('')}</div>`}
+function weekExtras(w){const P=S.plan;let h='';
+  const rows=[];P.order.forEach(tk=>{const T=P.types[tk];T.metrics.forEach(m=>{const c=cum(tk,m.k,w),wv=wkVal(tk,m.k,w);if(c==null&&wv==null)return;rows.push({tk,T,m,c,wv})})});
+  const first=!prevWeek(w);
+  h+=`<div class="card mt"><h3>${L(`Week ${w.week} figures by indicator`,`Số liệu tuần ${w.week} theo từng chỉ số`)}</h3><p class="sub">${Li(`${dd(w.from)} – ${dd(w.to)}. "This week" = cumulative this week minus cumulative last week.`,`"Trong tuần" = lũy kế tuần này trừ lũy kế tuần trước.`)}${first?` ${Li('This is the first week in the system, so only figures reported per week (sampling days and stores) can be split out.','Đây là tuần đầu tiên trên hệ thống nên chỉ tách được số có báo cáo riêng theo tuần (ngày và store sampling).')}`:''}</p><div class="tbl"><table><thead><tr><th>${L('Activity','Hạng mục')}</th><th>${L('Indicator','Chỉ số')}</th><th class="r sel">${L('This week','Trong tuần')}</th><th class="r">${L('Cumulative','Lũy kế')}</th><th class="r">${L('Year plan','KH năm')}</th><th class="r">${L('% of plan','% KH')}</th></tr></thead><tbody>${rows.map(r=>`<tr class="click" data-go="${r.tk}"><td><b>${esc(r.T.name)}</b><span class="vi">${esc(r.T.nameVi||'')}</span></td><td>${mLabel(r.m)}</td><td class="r num sel"><b>${fmt(r.wv)}</b></td><td class="r num">${fmt(r.c)}</td><td class="r num">${fmt(r.m.plan)}</td><td class="r">${r.m.plan&&r.c!=null?pct(r.c/r.m.plan,1):'–'}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const ch=w.types?.sampling?.chains||[];
+  if(ch.length){const tot=[1,2,3,4].map(i=>ch.reduce((a,c)=>a+Number(c[i]||0),0));
+    h+=`<div class="card mt"><h3>${L(`Sampling by chain · week ${w.week}`,`Sampling theo chuỗi · tuần ${w.week}`)}</h3><div class="tbl"><table><thead><tr><th>${L('Chain','Chuỗi')}</th><th class="r">${L('Days plan','Ngày KH')}</th><th class="r">${L('Days done','Ngày TT')}</th><th class="r">${L('Stores plan','Store KH')}</th><th class="r">${L('Stores done','Store TT')}</th><th class="r">%</th></tr></thead><tbody>${ch.map(c=>`<tr><td><b>${esc(c[0])}</b></td><td class="r num">${c[1]}</td><td class="r num">${c[2]}</td><td class="r num">${c[3]}</td><td class="r num">${c[4]}</td><td class="r">${c[1]?pct(c[2]/c[1]):'–'}</td></tr>`).join('')}<tr><td><b>${L('Total','Tổng')}</b></td>${tot.map(v=>`<td class="r num"><b>${v}</b></td>`).join('')}<td class="r"><b>${tot[0]?pct(tot[1]/tot[0]):'–'}</b></td></tr></tbody></table></div></div>`}
+  const M=w.market||[];
+  if(M.length)h+=`<div class="card mt"><h3>${L(`Market this week`,`Thị trường trong tuần`)}</h3><div class="grid g2">${M.map(x=>`<div class="mk"><div class="t"><b>${esc(x.b)}</b>${pill(x.s||'na',tx(x.cat).en,tx(x.cat).vi)}</div><div class="w">${BT(x.w)}</div><p>${BT(x.x)}</p></div>`).join('')}</div></div>`;
+  const ph=S.media.filter(m=>m.date&&m.date>=w.from&&m.date<=w.to);
+  h+=`<div class="card mt"><h3>${L(`Field photos this week (${ph.length})`,`Ảnh hiện trường trong tuần`)}</h3>${ph.length?mediaGrid(ph):`<div class="empty">${L('No photos dated this week.','Chưa có ảnh trong tuần này.')}</div>`}</div>`;
+  return h}
+
+/* ============ SEARCH · TRA CỨU ============ */
+const fold=s=>String(s??'').replace(/[đĐ]/g,'d').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9.%+\/]+/g,' ').replace(/\s+/g,' ').trim();
+const SYN=[
+ ['nguoi dung moi','new user','new users','khach moi','nguoi moi','nu','user moi','tuyen moi','recruit'],
+ ['dung thu','trial','trials','thu','an thu','nem thu','try','tried'],
+ ['sampling','sampling inline','mau thu','phat mau'],
+ ['tiep can','reach','reached'],['luot khach','traffic','footfall','khach di qua','luot'],
+ ['nguoi mua','buyer','buyers','mua','purchase','purchased'],
+ ['doanh so','sales','sale','san luong','t.e','tray','tray equivalent','ban hang','sell'],
+ ['ty le mua','conversion','conversion rate','chuyen doi','purchase rate','cr'],
+ ['ngay','day','days','working day','working days','ngay lam viec','wd'],
+ ['store','stores','cua hang','sieu thi','diem ban','outlet','outlets','shop','shops','supermarket'],
+ ['posm','basic posm','vat pham','vat pham trung bay','visibility','nhan dien'],
+ ['large display','large','dao trung bay','dao lon','island','seasonal display'],
+ ['mass display','mass','thi trung bay','showdown','competition','cuoc thi','jam packed showdown'],
+ ['fmd','merchandiser','merchandising','field merchandising','cham soc diem ban','facing'],
+ ['activation','kich hoat','booth','parade','dieu hanh','mascot','kiwi brother','nutrient squad','roadshow'],
+ ['gift','gift box','qua','qua tang','hop qua','tui u','ripening bag','rte bag','magnet','fridge magnet','nam cham','trung thu','mid autumn'],
+ ['ruby red','rubyred','kiwi do','red kiwi'],['inline','pg inline','pg','ba'],
+ ['ngan sach','budget','chi phi','cost','costs','po','hop dong','contract','nghiem thu','invoice','invoiced','ty dong','vnd','usd','tien hop dong','thanh toan'],
+ ['anh','photo','photos','hinh','hinh anh','image','images','picture','pictures','hien truong','field photo'],
+ ['layout','layouts','kv','key visual','thiet ke','design','render','mockup'],
+ ['doi thu','competitor','competitors','canh tranh','competition activity','thi truong','market intel','brand khac'],
+ ['khong lap duoc','blocked','fail','failed','bi chan','tu choi','rejected','that bai'],
+ ['chua trien khai','not yet','pending','chua lap','chua','todo','to do'],
+ ['da lap','installed','done','hoan thanh','xong','completed','ok'],
+ ['can cai thien','needs improvement','can xu ly','viec can xu ly','action','actions','issue','issues','van de','problem','task','tasks','todo list'],
+ ['tuan','week','weeks','wk','tuan nay','this week'],['tong cong','overall','total','luy ke','cumulative','tong'],
+ ['ke hoach','plan','target','targets','kpi','kpis','muc tieu','chi tieu','objective'],
+ ['thoi gian','timeline','lich','schedule','time','khi nao','when','period','start','bat dau','ket thuc','end'],
+ ['ly do','reason','reasons','why','vi sao','tai sao','because'],
+ ['mien bac','north','northern'],['mien nam','south','southern'],['mien trung','central'],
+ ['ha noi','hanoi','hn'],['tp.hcm','hcm','ho chi minh','hcmc','sai gon','saigon','tphcm'],['hai phong','haiphong'],['can tho','cantho'],['da nang','danang'],
+ ['big c','go','go!','bigc','top'],['co.opmart','coopmart','coop','co.op','cm'],['winmart','wm','vinmart'],['co.op extra','coop extra','extra'],['aeon','ae'],['lotte'],['emart'],['mega','mega market','mm'],
+ ['dinh nghia','definition','define','nghia la','meaning','la gi','what is'],
+ ['tier 1','t1'],['tier 2','t2'],['tier 3','t3']
+].map(g=>g.map(fold));
+const T2G=new Map();SYN.forEach((g,i)=>g.forEach(t=>{if(!T2G.has(t))T2G.set(t,i)}));
+const TERMS=[...T2G.keys()].sort((a,b)=>b.split(' ').length-a.split(' ').length||b.length-a.length);
+const STOP=new Set(['bao nhieu','how many','how much','what','which','the','is','are','la','cua','co','cac','nhung','may','nao','o','tai','in','at','of','for','show','me','xem','cho','toi','anh','em','hien','nay','current','currently','gi','bao','nhieu','va','and','to','den','voi','with','duoc','a','an','dang','da co','list','danh sach','tim','find','search','tra','cuu']);
+function groupsOf(t){const G=new Set();SYN.forEach((g,i)=>{if(g.some(x=>t.includes(' '+x+' ')))G.add(i)});return G}
+function parseQ(q){let t=' '+fold(q)+' ';const out=[],seen=new Set();const qn=t;
+  for(const term of TERMS){if(term.length<2&&!/\d/.test(term))continue;const k=' '+term+' ';if(t.includes(k)){const g=T2G.get(term);if(!seen.has(g)){seen.add(g);out.push({alts:SYN[g],label:term,g})}t=t.split(k).join(' ')}}
+  t.trim().split(' ').filter(x=>x&&!STOP.has(x)).forEach(x=>out.push({alts:[x],label:x,lit:true}));
+  return out}
+const hit=(e,c)=>c.g!=null?e.G.has(c.g):c.alts.some(a=>e.O.includes(' '+a+' ')||(a.length>=2&&e.O.includes(' '+a)));
+const hitT=(e,c)=>c.g!=null?SYN[c.g].some(a=>e.T.includes(' '+a+' ')):c.alts.some(a=>e.T.includes(' '+a));
+const BOOST={budget:['ngan sach'],media:['anh','layout'],market:['doi thu'],action:['can cai thien'],week:['tuan'],store:['store','khong lap duoc','chua trien khai','da lap'],dict:['dinh nghia'],chain:[],metric:['ty le mua','nguoi dung moi','doanh so','dung thu','nguoi mua','luot khach','tiep can','ngay']};
+const BOOSTG={};Object.entries(BOOST).forEach(([k,arr])=>arr.forEach(term=>{const g=T2G.get(fold(term));if(g!=null)(BOOSTG[g]=BOOSTG[g]||[]).push(k)}));
+const plain=o=>{const x=tx(o);return (x.en||'')+' '+(x.vi||'')};
+let IDX=null,IDXkey='';
+function buildIndex(){const P=S.plan,w=latest();if(!P||!w)return [];const key=(S.budget?'b':'')+Object.keys(S.weeks).length+'|'+S.media.length+'|'+allStores().length+'|'+(w._id)+'|'+JSON.stringify(Object.values(S.weeks).map(x=>x.updatedAt||x.publishedAt||x.week));
+  if(IDX&&IDXkey===key)return IDX;const E=[];const add=(o)=>{o.O=' '+fold(o.title+' '+o.text)+' ';o.G=groupsOf(o.O);o.T=' '+fold(o.title)+' ';E.push(o)};
+  P.order.forEach(tk=>{const T=P.types[tk],s=tStatus(tk,w);
+    add({k:'type',w:5,title:T.name,sub:`${T.nameVi||''} · ${ds(T.start)}–${ds(T.end)} · ${s.en} / ${s.vi}${T.budget!=null?` · budget ${fmt(T.budget,2)} bn VND`:''}`,text:`${T.name} ${T.nameVi||''} ${plain({en:T.role,vi:T.roleVi})} ${plain({en:T.scope,vi:T.scopeVi})} ${s.en} ${s.vi} ke hoach plan thoi gian timeline`,go:'chitiet-'+tk});
+    if(T.budget!=null)add({k:'budget',w:3,title:`Budget · ${T.name}`,sub:`Ngân sách ${T.nameVi||T.name}`,val:`${fmt(T.budget,2)}`,unit:'bn VND · tỷ đ',text:`ngan sach budget ${T.name} ${T.nameVi||''} ${T.budgetNote||''}`,go:'chitiet-'+tk});
+    T.metrics.forEach(m=>{const c=cum(tk,m.k,w),wv=wkVal(tk,m.k,w);
+      add({k:'metric',w:6,tk,title:`${T.name} · ${m.l}`,sub:`${m.lv||''}${m.lv?' · ':''}Plan ${fmt(m.plan)} ${m.u}${c!=null&&m.plan?` · ${pct(c/m.plan,1)}`:''}${wv!=null?` · week ${w.week}: ${fmt(wv)}`:''}`,val:c==null?'–':fmt(c,c%1?1:0),unit:`${m.u} · ${Li('cumulative','lũy kế').replace(/<[^>]+>/g,' ')}`,text:`${T.name} ${T.nameVi||''} ${m.l} ${m.lv||''} ${m.u} ${m.uv||''} kpi chi so`,go:'chitiet-'+tk})})});
+  const B=S.budget;if(B){add({k:'budget',w:6,title:'Ngân sách hợp đồng · Contract value',sub:`Đã nghiệm thu ${fmt(B.invoiced,2)} tỷ đ (${pct(B.invoiced/B.contract,1)}) · còn lại ${fmt(B.remaining,2)} tỷ đ`,val:fmt(B.contract,2),unit:'tỷ đ · bn VND',text:'ngan sach budget hop dong contract nghiem thu invoice con lai remaining tong',go:'tong'});
+    (B.po||[]).forEach(p=>add({k:'budget',w:4,title:'PO · '+p[0],sub:{done:'Đã nghiệm thu · invoiced',run:'Đang thực hiện · running',wait:'Chưa bắt đầu · not started'}[p[2]]||p[2],val:fmt(p[1],2),unit:'tỷ đ',text:`po ngan sach budget ${p[0]} ${p[2]==='done'?'da nghiem thu invoiced':''}`,go:'tong'}));
+    (B.pillars||[]).forEach(p=>add({k:'budget',w:4,title:'Phân bổ · '+p[0],sub:`${pct(p[1]/B.contract)} hợp đồng · of contract`,val:fmt(p[1],2),unit:'tỷ đ',text:`ngan sach budget phan bo allocation ${p[0]}`,go:'tong'}))}
+  const smp=w.types?.sampling?.m||{};
+  if(smp.trial){add({k:'metric',w:7,title:'Purchase rate · Tỷ lệ mua',sub:'Buyers ÷ triers · Người mua chia người dùng thử · plan 35%',val:pct(smp.buyer/smp.trial,1),unit:'',text:'ty le mua conversion purchase rate buyer trial chuyen doi',go:'chitiet-sampling'});
+    add({k:'metric',w:7,title:'New users ÷ triers · Người mới trên người thử',sub:'Plan 40% · 2025 actual 19.7%',val:pct(smp.nu/smp.trial,1),unit:'',text:'nguoi dung moi new user trial ty le',go:'chitiet-sampling'})}
+  allStores().forEach(x=>{const st=PS[x.s]||['na',x.s,x.s];add({k:'store',w:2,title:x.n,sub:`${CHAINS[x.chain]||x.chain} · ${x.p} · ${(REG[x.r]||[x.r,''])[0]} · ${x.t} · POSM: ${st[1]} / ${st[2]}${x.l?' · Large display':''}${x.x?' · '+x.x:''}`,pill:st[0],text:`${x.n} ${CHAINS[x.chain]||''} ${x.chain} ${x.p} ${(REG[x.r]||[]).join(' ')} tier ${String(x.t).replace('T','')} ${x.t} ${st[1]} ${st[2]} ${x.l?'large display':''} ${x.x||''} ${x.x?'ly do reason':''} store posm`,store:x})});
+  const chains={};allStores().forEach(x=>{const c=chains[x.chain]||(chains[x.chain]={n:0,ok:0,fail:0});c.n++;if(x.s==='ok')c.ok++;if(x.s==='fail')c.fail++});
+  Object.entries(chains).forEach(([c,v])=>{const sc=(w.types?.sampling?.chains||[]).find(r=>fold(r[0]).includes(fold(CHAINS[c]||c).split(' ')[0]));
+    add({k:'chain',w:4,title:CHAINS[c]||c,sub:`POSM ${v.ok}/${v.n} installed · ${v.fail} blocked${sc?` · week ${w.week} sampling ${sc[2]}/${sc[1]} days, ${sc[4]} stores`:''}`,val:`${v.ok}/${v.n}`,unit:'POSM',text:`${CHAINS[c]||c} ${c} chuoi chain posm sampling store`,go:'chitiet-posm',chain:c})});
+  S.media.forEach(m=>{const T=P.types[m.type];add({k:'media',w:2,title:plain(m.title).trim(),sub:`${m.kind==='layout'?'Layout':'Photo · Ảnh'} · ${T?T.name:''} · ${[m.chain,m.store,dd(m.date)].filter(Boolean).join(' · ')}`,img:mediaSrc(m),text:`${plain(m.title)} ${m.store||''} ${m.chain||''} ${T?T.name+' '+(T.nameVi||''):''} ${m.kind==='layout'?'layout thiet ke':'anh photo hien truong'} ${plain(m.note)}`,mid:m._id})});
+  weekList().forEach(x=>{(x.actions||[]).forEach(a=>add({k:'action',w:3,title:plain(a.t).trim(),sub:`${tx(a.d).vi||tx(a.d).en} · ${a.o||''} · due ${dd(a.dl)} · W${x.week}`,pill:a.s,text:`${plain(a.t)} ${plain(a.d)} ${a.o||''} ${a.type?(P.types[a.type]?.name||''):''} tuan ${x.week} week ${x.week} can cai thien`,wk:x.week}));
+    (x.market||[]).forEach(m=>add({k:'market',w:3,title:m.b,sub:`${plain(m.cat)} · ${plain(m.w)} · W${x.week}`,text:`${m.b} ${plain(m.cat)} ${plain(m.w)} ${plain(m.x)} doi thu thi truong`,go:'thitruong'}));
+    add({k:'week',w:4,title:`Week ${x.week} · Tuần ${x.week}`,sub:`${dd(x.from)} – ${dd(x.to)} · ${x.status==='published'?'published':'draft'} · ${(x.headline||[]).map(h=>tx(h).en||tx(h).vi).join(' ').slice(0,160)}…`,text:`tuan ${x.week} week ${x.week} w${x.week} ${(x.headline||[]).map(plain).join(' ')} ${dd(x.from)} ${dd(x.to)}`,wk:x.week})});
+  (P.dictionary||[]).forEach(d=>{const s=Array.isArray(d)?d.map(plain).join(' · '):Object.values(d).map(plain).join(' · ');add({k:'dict',w:1,title:Array.isArray(d)?plain(d[0]).trim():s.split(' · ')[0],sub:s,text:s+' dinh nghia definition',go:'nhaplieu'})});
+  IDX=E;IDXkey=key;return E}
+function runSearch(q){const C=parseQ(q);if(!C.length)return {C,res:[],approx:false};const E=buildIndex();const qf=fold(q);
+  const want=new Set();C.forEach(c=>{if(c.g!=null)(BOOSTG[c.g]||[]).forEach(k=>want.add(k))});
+  let res=E.map(e=>{const n=C.filter(c=>hit(e,c)).length;return {e,n}}).filter(r=>r.n===C.length);
+  let approx=false;if(!res.length&&C.length>1){approx=true;res=E.map(e=>({e,n:C.filter(c=>hit(e,c)).length})).filter(r=>r.n>=Math.max(1,Math.ceil(C.length/2)))}
+  res.forEach(r=>{r.s=r.n*10+r.e.w+(want.has(r.e.k)?15:0)+(r.e.T.includes(' '+qf+' ')?25:0)+(C.filter(c=>hitT(r.e,c)).length*4)});
+  res.sort((a,b)=>b.s-a.s);return {C,res:res.map(r=>r.e),approx}}
+const KIND={metric:['Indicators','Chỉ số'],type:['Activities','Hạng mục'],chain:['Chains','Chuỗi'],store:['Stores','Cửa hàng'],action:['Needs improvement','Cần cải thiện'],market:['Market','Thị trường'],media:['Photos & layouts','Ảnh & layout'],week:['Weeks','Tuần'],budget:['Budget','Ngân sách'],dict:['Definitions','Định nghĩa']};
+function vSearch(){const q=$('#q').value.trim();const el=$('#v-timkiem');
+  if(!q){el.innerHTML='';return}
+  const {C,res,approx}=runSearch(q);
+  let h=`<div class="ph1"><div><h1>${L('Search','Tra cứu')}</h1><p>${Li(`${res.length} result${res.length===1?'':'s'} for “${esc(q)}”`,`${res.length} kết quả`)}${C.length?` · ${Li('understood as','hiểu là')}: ${C.map(c=>`<span class="chip" style="padding:1px 8px">${esc(c.alts.slice(0,3).join(' / '))}</span>`).join(' ')}`:''}</p></div></div>`;
+  h+=`<div id="aiOut"></div>`;
+  if(approx)h+=`<div class="notice">${Li('No exact match. Showing the closest results.','Không có kết quả khớp hết. Đang hiện kết quả gần nhất.')}</div>`;
+  const metrics=res.filter(r=>r.k==='metric'&&r.val&&r.val!=='–').slice(0,4);
+  if(metrics.length)h+=`<div class="answer"><div class="tag">Quick answer · Trả lời nhanh · ${Li('at '+dd(latest().to),'')}</div><div class="row">${metrics.map(m=>`<div class="it"><b>${esc(m.val)}</b><span>${esc(m.title)}${m.unit?' · '+esc(m.unit):''}</span></div>`).join('')}</div></div>`;
+  if(!res.length)h+=`<div class="empty">${L('Nothing found. Try another word, or press ASK AI.','Không tìm thấy. Thử từ khác, hoặc bấm HỎI AI.')}<div class="hint" style="justify-content:center">${['new user','store blocked Hà Nội','Aeon Tân Phú','layout booth','tuần 20','đối thủ'].map(x=>`<button data-hq="${x}">${x}</button>`).join('')}</div></div>`;
+  const groups={};res.forEach(r=>(groups[r.k]=groups[r.k]||[]).push(r));
+  const order=[...new Set(res.map(r=>r.k))].sort((x,y)=>(y==='metric')-(x==='metric'));
+  order.forEach(k=>{const g=groups[k];if(!g||!KIND[k])return;const show=g.slice(0,S.srMore===k?400:8);
+    h+=`<div class="sr-grp"><h4>${KIND[k][1]} · ${KIND[k][0]} (${g.length})</h4><div class="sr-list">${show.map((r,i)=>`<button class="sr" data-ri="${res.indexOf(r)}"><div>${r.img?`<div style="display:flex;gap:10px;align-items:center"><img src="${esc(r.img)}" alt=""><div>`:''}<b>${esc(r.title)}</b><div class="m">${esc(r.sub||'')}</div>${r.img?'</div></div>':''}</div>${r.val?`<div class="v">${esc(r.val)}<small>${esc(r.unit||'')}</small></div>`:r.pill?`<div>${pill(r.pill,r.pill,(r.k==='store'?{ok:'Đã lắp',bad:'Không lắp được',na:'Chưa triển khai'}:{ok:'Đã xong',warn:'Theo dõi',bad:'Cần cải thiện',na:'Chưa đo'})[r.pill]||r.pill)}</div>`:'<span></span>'}</button>`).join('')}</div>${g.length>8&&S.srMore!==k?`<button class="btn sm sec mt" data-more="${k}">${Li(`Show all ${g.length}`,'Xem tất cả')}</button>`:''}</div>`});
+  el.innerHTML=h;
+  if(S.aiText)$('#aiOut').innerHTML=S.aiText;
+  el.querySelectorAll('[data-more]').forEach(b=>b.onclick=()=>{S.srMore=b.dataset.more;render()});
+  el.querySelectorAll('[data-hq]').forEach(b=>b.onclick=()=>{$('#q').value=b.dataset.hq;onQ()});
+  el.querySelectorAll('[data-ri]').forEach(b=>b.onclick=()=>{const r=res[+b.dataset.ri];if(!r)return;openResult(r)});
+}
+function openResult(r){const clear=()=>{$('#q').value='';$('#qClr').hidden=true;S.aiText='';};
+  if(r.mid){LB=S.media.filter(m=>m.kind===S.media.find(x=>x._id===r.mid)?.kind);LBi=LB.findIndex(m=>m._id===r.mid);openLB();return}
+  if(r.store){S.storeF={chain:r.store.chain,s:'',r:'',q:r.store.n};clear();go('chitiet-posm');setTimeout(()=>{const t=$('#storeTbl');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})},300);return}
+  if(r.chain){S.storeF={chain:r.chain,s:'',r:'',q:''};clear();go('chitiet-posm');return}
+  if(r.wk){S.mode=S.wkSel=r.wk;clear();go('tuan');route();return}
+  if(r.go){clear();go(r.go);route()}}
+let qT=null;
+function onQ(){const v=$('#q').value.trim();$('#qClr').hidden=!v;$('#askAI').hidden=!v||!S.sample;S.aiText='';S.srMore='';clearTimeout(qT);
+  qT=setTimeout(()=>{if(v){if(S.view!=='timkiem'){go('timkiem')}else render()}else{go(S.lastView||'tong')}},120)}
+$('#q').addEventListener('input',onQ);
+$('#q').addEventListener('keydown',e=>{if(e.key==='Escape'){$('#q').value='';onQ()}if(e.key==='Enter'&&S.sample&&e.shiftKey)askAI()});
+$('#qClr').onclick=()=>{$('#q').value='';onQ();$('#q').focus()};
+$('#askAI').onclick=()=>askAI();
+function aiContext(){const P=S.plan,w=latest();if(!P||!w)return '{}';const st=allStores();
+  const ctx={as_of:w.to,latest_week:w.week,weeks:weekList().map(x=>({week:x.week,from:x.from,to:x.to,status:x.status,key_points:(x.headline||[]).map(h=>tx(h).en||tx(h).vi)})),
+    objectives:P.objectives,
+    activities:P.order.map(tk=>{const T=P.types[tk],s=tStatus(tk,w);return {name:T.name,name_vi:T.nameVi,period:[T.start,T.end],status:s.en,note:tx(w.types?.[tk]?.note).en||tx(w.types?.[tk]?.note).vi,metrics:T.metrics.map(m=>({metric:m.l,metric_vi:m.lv,unit:m.u,year_plan:m.plan,cumulative:cum(tk,m.k,w),this_week:wkVal(tk,m.k,w)}))}}),
+    sampling_by_chain_this_week:(w.types?.sampling?.chains||[]).map(c=>({chain:c[0],days_plan:c[1],days_done:c[2],stores_plan:c[3],stores_done:c[4]})),
+    sampling_same_period_2025:P.ly?.sampling,
+    posm_stores:{total:st.length,installed:st.filter(x=>x.s==='ok').length,blocked:st.filter(x=>x.s==='fail').length,
+      by_chain:Object.entries(st.reduce((a,x)=>{const c=a[CHAINS[x.chain]||x.chain]||(a[CHAINS[x.chain]||x.chain]={total:0,installed:0,blocked:0});c.total++;if(x.s==='ok')c.installed++;if(x.s==='fail')c.blocked++;return a},{})).map(([k,v])=>({chain:k,...v})),
+      blocked_list:st.filter(x=>x.s==='fail').map(x=>({store:x.n,chain:CHAINS[x.chain]||x.chain,province:x.p,reason:x.x})),large_display_stores:st.filter(x=>x.l).map(x=>x.n)},
+    open_actions:actionsForAll(),market:weekList().flatMap(x=>(x.market||[]).map(m=>({week:x.week,brand:m.b,category:tx(m.cat).en,where:tx(m.w).en,note:tx(m.x).en||tx(m.x).vi}))),
+    photos_and_layouts:S.media.map(m=>({kind:m.kind,activity:P.types[m.type]?.name,title:tx(m.title).en||tx(m.title).vi,store:m.store,chain:m.chain,date:m.date})),
+    definitions:P.dictionary};
+  return JSON.stringify(ctx)}
+function actionsForAll(){const m=new Map();weekList().forEach(w=>(w.actions||[]).forEach(a=>m.set(fold(plain(a.t)),{week:w.week,severity:a.s,title:tx(a.t).en||tx(a.t).vi,detail:tx(a.d).en||tx(a.d).vi,owner:a.o,due:a.dl,activity:a.type})));return [...m.values()]}
+let aiCtl=null;
+async function askAI(){const q=$('#q').value.trim();if(!q||!S.sample)return;if(S.view!=='timkiem')go('timkiem');
+  if(aiCtl)aiCtl.abort();aiCtl=new AbortController();
+  const box=()=>$('#aiOut');const paint=t=>{S.aiText=`<div class="aibox"><div class="tag">AI answer · Trả lời của AI · chỉ dựa trên số liệu trong app</div>${esc(t)}</div>`;const b=box();if(b)b.innerHTML=S.aiText};
+  paint('…');
+  const prompt=`You are the reporting assistant of Blue Sky Corporation (BSC) for the Zespri Vietnam 2026 programme.
+Answer the question using ONLY the JSON data below. Reply in the same language as the question (Vietnamese or English).
+Be short and concrete: start with the direct answer, then at most 5 bullet points with numbers and units. Use "–" bullets.
+If the data does not contain the answer, say clearly that it is not in the report yet. Never invent figures.
+Numbers: cumulative = from programme start to the report date; this_week = that week only (null = not split out).
+
+QUESTION: ${q}
+
+DATA (as of ${latest()?.to}):
+${aiContext()}`;
+  try{const r=await S.sample(prompt,{modelTier:'quick',signal:aiCtl.signal,onText:({text})=>paint(text)});paint(r.text)}
+  catch(e){if(e&&e.name==='AbortError')return;paint(e&&e.code==='rate_limited'?'AI is busy. Try again in a minute. · AI đang bận, thử lại sau 1 phút.':(e&&e.code==='not_granted'?'AI is not available for this account. · Tài khoản này chưa dùng được AI.':'AI could not answer right now. · AI chưa trả lời được, thử lại sau.'));if(e&&e.code==='not_granted'){S.sample=null;$('#askAI').hidden=true}}}
+
+/* ============ OVERVIEW ============ */
+function vTong(w){
+  const P=S.plan,spl=P.types.sampling,ly=P.ly?.sampling||{};
+  const pd=k=>spl.metrics.find(x=>x.k===k).plan/spl.metrics.find(x=>x.k==='days').plan;
+  const g=k=>val('sampling',k,w), days=g('days'), daysC=cum('sampling','days',w);
+  const smp=w.types.sampling?.m||{};
+  const nu=g('nu'),te=g('te'),tr=g('trial'),by=g('buyer');
+  const nuR=days&&nu!=null?(nu/days)/pd('nu'):(daysC?(smp.nu/daysC)/pd('nu'):null);
+  const teR=days&&te!=null?(te/days)/pd('te'):(daysC?(smp.te/daysC)/pd('te'):null);
+  const cr=tr&&by!=null?by/tr:(smp.trial?smp.buyer/smp.trial:null);
+  const st=allStores(),ok=st.filter(x=>x.s==='ok').length,fail=st.filter(x=>x.s==='fail').length,pe=elapsed(P.types.posm,w.to),cov=st.length?ok/st.length:null;
+  const yo=k=>ly[k]?smp[k]/ly[k]-1:null,yoT=v=>v==null?'–':`<span class="${v>=0?'up':'down'}">${v>=0?'+':''}${pct(v)}</span>`;
+  const wkNote=!isAll()&&nu==null?Li('Weekly split not available for the first week in the system','Tuần đầu tiên chưa tách được số riêng tuần'):'';
+  let h=`<div class="ph1"><div><h1>${isAll()?L('Zespri × BSC · Overall programme','Tổng cộng chương trình'):L(`Zespri × BSC · Week ${w.week}`,`Tuần ${w.week}`)}</h1><p>${isAll()?Li(`Cumulative to ${dd(w.to)}`,`Lũy kế đến ${dd(w.to)}`):Li(`${dd(w.from)} – ${dd(w.to)}`,'')}</p></div><div class="chips">${P.objectives.map(o=>`<span class="chip">${BT(o)}</span>`).join('')}</div></div>`;
+  if(!isAll())h=weekChips(w)+h;
+  h+=modeBar(w)+headlineBlock(w);
+  h+=`<div class="grid g4">`;
+  h+=kpiTile(L('New users','Người dùng mới'),fmt(isAll()?smp.nu:nu),stOf(nuR),nuR,[`<b>${fmt(days&&nu!=null?nu/days:(daysC?smp.nu/daysC:null),1)}</b>/ngày · KH ${fmt(pd('nu'),1)}/ngày <span class="vi-i">per day vs plan</span>`,isAll()?`so cùng kỳ <span class="vi-i">vs same period 2025</span>: ${yoT(yo('nu'))}`:(wkNote||`Lũy kế <span class="vi-i">Cumulative</span>: <b>${fmt(smp.nu)}</b>`)]);
+  h+=kpiTile(L('Purchase rate (buyers / triers)','Tỷ lệ mua trên người dùng thử'),cr==null?'–':fmt(cr*100,1)+'<small>%</small>',stOf(cr/0.35),cr?Math.min(cr/0.35,1):0,[`KH <span class="vi-i">Plan</span> <b>35%</b> · 2025: ${ly.trial?fmt(ly.buyer/ly.trial*100,1)+'%':'–'}`,`Doanh số/người mua <span class="vi-i">Sales per buyer</span>: <b>${fmt(smp.buyer?smp.te/smp.buyer:null,3)}</b> T.E`]);
+  h+=kpiTile(L('Sampling sales','Doanh số sampling'),fmt(isAll()?smp.te:te)+'<small> T.E</small>',stOf(teR),teR,[`<b>${fmt(days&&te!=null?te/days:(daysC?smp.te/daysC:null),1)}</b> T.E/ngày · KH ${fmt(pd('te'),1)} <span class="vi-i">per day vs plan</span>`,isAll()?`so cùng kỳ <span class="vi-i">vs same period 2025</span>: ${yoT(yo('te'))}`:(wkNote||`Lũy kế <span class="vi-i">Cumulative</span>: <b>${fmt(smp.te)}</b>`)]);
+  h+=kpiTile(L('MT stores with POSM','Store MT đã lắp POSM'),ok+`<small> / ${st.length}</small>`,stOf(pe?cov/pe:null),cov,[`<b>${pct(cov)}</b> · ${fail} không lắp được <span class="vi-i">blocked</span>`,`Thời gian đã qua <span class="vi-i">Time elapsed</span> <b>${pct(pe)}</b> (vạch đen)`],pe);
+  h+=`</div>`;
+  // master table
+  const wkCol=!isAll();
+  h+=`<div class="card mt"><h3>${L('All activities','Toàn bộ hạng mục')}</h3><p class="sub">${Li('Click a row for detail. Completion is compared with the share of each activity\'s planned period already elapsed (black mark).','Bấm vào dòng để xem chi tiết. % hoàn thành so với % thời gian đã qua theo kế hoạch của hạng mục (vạch đen).')}</p><div class="tbl"><table><thead><tr><th>${L('Activity','Hạng mục')}</th><th>${L('Plan period (total days)','Thời gian KH (tổng ngày)')}</th><th>${L('Unit','Đơn vị tính')}</th>${wkCol?`<th class="r sel">${L('This week','Tuần này')}</th>`:''}<th class="r">${L('Cumulative','Lũy kế')}</th><th class="r">${L('Plan','Kế hoạch')}</th><th style="min-width:130px">${L('Completion','Hoàn thành')}</th><th>${L('Status','Trạng thái')}</th></tr></thead><tbody>`;
+  P.order.forEach(tk=>{const T=P.types[tk],m=mainM(tk),e=evalM(tk,m,w),s=tStatus(tk,w);
+    h+=`<tr class="click" data-go="${tk}"><td><b>${esc(T.name)}</b><span class="vi">${esc(T.nameVi||'')}</span></td><td style="white-space:nowrap">${ds(T.start)} – ${ds(T.end)} <b>(${planDays(T)} days)</b><span class="vi">${planDays(T)} ngày</span></td><td>${mUnit(m)}<span class="vi">${esc(m.l)}</span></td>${wkCol?`<td class="r num sel"><b>${fmt(e.wv)}</b></td>`:''}<td class="r num"><b>${fmt(e.c)}</b></td><td class="r num">${fmt(e.plan)}</td><td>${e.done!=null?`${pct(e.done)}<div class="mini"><i style="width:${Math.min(e.done,1)*100}%;background:${colorOf(s.s)}"></i>${e.exp!=null?`<em style="left:${e.exp*100}%"></em>`:''}</div>`:`<span class="vi-i">Chưa có số</span>`}</td><td>${pill(s.s,s.en,s.vi)}</td></tr>`});
+  h+=`</tbody></table></div></div>`;
+  h+=`<div class="grid g21 mt"><div class="card"><h3>${L('Where the programme stands','Chương trình đang ở đâu tại ngày báo cáo')}</h3><p class="sub">${Li(`At ${dd(w.to)}: which activities are running and how far each has got against its own plan.`,`Tại ${dd(w.to)}: loại hình nào đang chạy và đã đạt bao nhiêu so với kế hoạch của chính nó.`)}</p>${timeline(w)}</div><div class="card"><h3>${L('Needs improvement','Cần cải thiện')}</h3><p class="sub">${Li(isAll()?'Open items from all weeks, latest version of each.':'Items raised this week.',isAll()?'Việc còn mở của tất cả các tuần.':'Việc nêu ra trong tuần này.')}</p>${actionsHtml(actionsFor())}</div></div>`;
+  if(!isAll())h+=weekExtras(w);
+  const el=$('#v-'+(S.view==='tuan'?'tuan':'tong'));el.innerHTML=h;
+  el.querySelectorAll('tr[data-go]').forEach(r=>r.addEventListener('click',()=>go('chitiet-'+r.dataset.go)));
+  el.querySelectorAll('[data-wk]').forEach(b=>b.addEventListener('click',()=>{S.mode=S.wkSel=+b.dataset.wk;render()}));
+  bindMedia(el);
+}
+function timeline(w){const P=S.plan,a=toD('2026-03-01'),b=toD('2026-12-01'),span=b-a,pos=s=>Math.max(0,Math.min(1,(toD(s)-a)/span))*100;
+  const months=['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'];
+  const running=[],upcoming=[],ended=[];
+  P.order.forEach(tk=>{const T=P.types[tk],e=elapsed(T,w.to);(e===0?upcoming:e>=1?ended:running).push(tk)});
+  let g=`<div class="nowchips"><span style="font-size:12px;font-weight:700">${Li('Running now','Đang chạy')}:</span>${running.map(k=>pill(tStatus(k,w).s==='na'?'na':'warn',P.types[k].name)).join('')}</div>`;
+  if(upcoming.length)g+=`<div class="nowchips"><span style="font-size:12px;font-weight:700">${Li('Next','Sắp tới')}:</span>${upcoming.map(k=>`<span class="chip">${esc(P.types[k].name)} · ${ds(P.types[k].start)}</span>`).join('')}</div>`;
+  g+=`<div class="legend"><span style="--c:#d9e7d2">${Li('Planned period','Thời gian kế hoạch')}</span><span style="--c:#2e8b57">${Li('Completed so far','Đã hoàn thành')}</span><span class="line">${Li('Report date','Ngày báo cáo')}</span></div>`;
+  g+=`<div class="tl"><div class="mon"><div></div><div>${months.map(m=>`<span>${m}</span>`).join('')}</div><div></div></div>`;
+  P.order.forEach(tk=>{const T=P.types[tk],m=mainM(tk),e=evalM(tk,m,w),s=tStatus(tk,w),el=elapsed(T,w.to);const L0=pos(T.start),W0=pos(T.end)-pos(T.start);
+    const stTxt=el===0?Li('Starts '+ds(T.start),'Bắt đầu '+ds(T.start)):el>=1&&e.done==null?Li('Period ended','Đã hết thời gian'):e.done!=null?`<b>${pct(e.done)}</b> done · ${pct(el)} time<span class="vi">đạt ${pct(e.done)} · đã qua ${pct(el)} thời gian</span>`:Li(`${pct(el)} time · no figures`,`đã qua ${pct(el)} · chưa có số`);
+    g+=`<div class="row"><a href="#chitiet-${tk}" style="text-decoration:none;color:var(--ink);line-height:1.2"><b>${esc(T.name)}</b><span class="vi">${esc(T.nameVi||'')}</span></a><div class="track"><div class="plan" style="left:${L0}%;width:${W0}%"><div class="done" style="--c:${colorOf(s.s==='na'?'ok':s.s)};width:${Math.min(e.done||0,1)*100}%"></div></div><div class="now" style="left:${pos(w.to)}%" title="${dd(w.to)}"></div></div><div class="st">${stTxt}</div></div>`});
+  return g+'</div>'}
+
+/* ============ DASHBOARD ============ */
+function vDash(w){
+  const P=S.plan,spl=P.types.sampling;
+  const pd=k=>spl.metrics.find(x=>x.k===k).plan/spl.metrics.find(x=>x.k==='days').plan;
+  let h=`<div class="ph1"><div><h1>${L('Dashboard','Biểu đồ tổng hợp')}</h1><p>${viewLabel()}</p></div></div>`+modeBar(w);
+  // all activities progress
+  const items=P.order.map(tk=>{const T=P.types[tk],m=mainM(tk),e=evalM(tk,m,w),s=tStatus(tk,w);const wpct=e.wv!=null&&m.plan?e.wv/m.plan:null;
+    return {l:T.name,lv:T.nameVi,v:isAll()?(e.done||0):(wpct||0),m:isAll()?e.exp:null,c:colorOf(s.s),t:isAll()?(e.done!=null?`${pct(e.done)} · time ${pct(e.exp)}`:'no figures'):(wpct!=null?`+${pct(wpct,1)} of plan (${fmt(e.wv)} ${m.u})`:'–')}});
+  h+=`<div class="card"><h3>${isAll()?L('All activities at a glance','Toàn cảnh tất cả loại hình'):L(`Week ${w.week} output by activity`,`Sản lượng tuần ${w.week} theo loại hình`)}</h3><p class="sub">${isAll()?Li('Bar = share of plan completed. Black mark = share of the planned period elapsed. A bar short of its mark is behind.','Thanh = % kế hoạch đã hoàn thành. Vạch đen = % thời gian kế hoạch đã qua. Thanh ngắn hơn vạch là đang chậm.'):Li('Bar = share of the full-year plan delivered in this week alone.','Thanh = % kế hoạch cả năm làm được riêng trong tuần này.')}</p>${hbars(items,isAll()?1:Math.max(0.1,...items.map(i=>i.v)),{W:1000,x0:220,axis:isAll()?[0,.25,.5,.75,1]:null,axisFmt:g=>g*100+'%',label:'Activities'})}</div>`;
+  // week by week table
+  const WL=weekList().filter(x=>x.week<=latest().week);
+  h+=`<div class="card mt"><h3>${L('Week by week','Từng tuần')}</h3><p class="sub">${Li('Output of each week for the main unit of every activity, with the cumulative total. The selected week is highlighted.','Sản lượng từng tuần theo đơn vị tính chính của mỗi loại hình, kèm lũy kế. Tuần đang chọn được tô vàng.')}</p><div class="tbl"><table><thead><tr><th>${L('Activity','Loại hình')}</th><th>${L('Unit','Đơn vị')}</th>${WL.map(x=>`<th class="r ${!isAll()&&x.week===w.week?'sel':''}">W${x.week}<span class="vi">${ds(x.from)}–${ds(x.to)}</span></th>`).join('')}<th class="r">${L('Cumulative','Lũy kế')}</th><th class="r">${L('Plan','KH')}</th></tr></thead><tbody>${P.order.map(tk=>{const m=mainM(tk);return `<tr><td><b>${esc(P.types[tk].name)}</b><span class="vi">${esc(P.types[tk].nameVi||'')}</span></td><td>${mUnit(m)}</td>${WL.map(x=>`<td class="r num ${!isAll()&&x.week===w.week?'sel':''}">${fmt(wkVal(tk,m.k,x))}</td>`).join('')}<td class="r num"><b>${fmt(cum(tk,m.k,latest()))}</b></td><td class="r num">${fmt(m.plan)}</td></tr>`}).join('')}</tbody></table></div><p class="src">${Li('“–” = no figure, or the first week in the system where a weekly split cannot be computed.','“–” là chưa có số, hoặc tuần đầu tiên chưa tách được số riêng tuần.')}</p></div>`;
+  // sampling productivity + funnel
+  const g=k=>val('sampling',k,w);let days=g('days'),vals={};let fb=false;['traffic','reach','trial','nu','buyer','te'].forEach(k=>vals[k]=g(k));
+  if(Object.values(vals).some(v=>v==null)){fb=true;days=cum('sampling','days',w);['traffic','reach','trial','nu','buyer','te'].forEach(k=>vals[k]=cum('sampling',k,w))}
+  const fbNote=fb&&!isAll()?`<p class="src">${Li('Weekly split not available for this week: cumulative figures shown.','Tuần này chưa tách được số riêng: đang hiện số lũy kế.')}</p>`:'';
+  h+=`<div class="grid g2 mt"><div class="card"><h3>${L('Sampling productivity per day vs plan','Năng suất sampling mỗi ngày so với KH')}</h3><p class="sub">${Li('95%+ green · 85–95% amber · below 85% red','Từ 95% xanh, 85–95% vàng, dưới 85% đỏ')}</p>${days?hbars(['traffic','reach','trial','nu','buyer','te'].map(k=>{const r=(vals[k]/days)/pd(k),m=spl.metrics.find(x=>x.k===k);return {l:m.l,lv:m.lv,v:r,t:pct(r),c:colorOf(stOf(r))}}),1.2,{axis:[0,.5,1],ref:1,axisFmt:g=>g*100+'%',label:'Productivity'}):`<div class="empty">${L('No sampling figures.','Chưa có số sampling.')}</div>`}${fbNote}</div>`;
+  const steps=[['traffic','Traffic','Lượt khách'],['reach','Reach','Tiếp cận'],['trial','Trial','Dùng thử'],['buyer','Buyers','Người mua'],['nu','New users','Người mới']];
+  h+=`<div class="card"><h3>${L('Sampling funnel','Phễu sampling')}</h3><p class="sub">${Li('Conversion between steps.','Tỷ lệ chuyển tiếp giữa các bước.')}</p>${vals.traffic?hbars(steps.map(([k,l,lv],i)=>({l,lv,v:vals[k],t:fmt(vals[k])+(i?` · ${pct(vals[k]/vals[k==='nu'?'trial':steps[i-1][0]],1)}`:''),c:k==='nu'?'#c23d2c':'#2f8a3f'})),vals.traffic,{x0:110,label:'Funnel'}):''}${fbNote}<p class="src">${Li(`New users as share of triers: ${pct(vals.trial?vals.nu/vals.trial:null,1)} (plan 40%).`,'Người mới trên người dùng thử (KH 40%).')}</p></div></div>`;
+  // POSM + chains
+  const st=allStores(),byC={};st.forEach(x=>{const c=byC[x.chain]||(byC[x.chain]={n:0});c.n++;c[x.s]=(c[x.s]||0)+1});const byR={};st.forEach(x=>{const c=byR[x.r]||(byR[x.r]={n:0});c.n++;c[x.s]=(c[x.s]||0)+1});
+  const stack=(o,lab)=>Object.entries(o).sort((a,b)=>b[1].n-a[1].n).map(([k,c])=>`<div class="row"><div><b>${lab(k)}</b></div><div class="stk"><i style="width:${(c.ok||0)/c.n*100}%;background:var(--ok)"></i><i style="width:${(c.fail||0)/c.n*100}%;background:var(--bad)"></i></div><div class="num r">${c.ok||0}/${c.n}</div></div>`).join('');
+  const ch=chainsFor();
+  h+=`<div class="grid g3 mt"><div class="card"><h3>${L('POSM by chain','POSM theo chuỗi')}</h3><div class="sb">${stack(byC,k=>esc(CHAINS[k]||k))}</div><div class="legend" style="margin-top:10px"><span style="--c:var(--ok)">${Li('Installed','Đã lắp')}</span><span style="--c:var(--bad)">${Li('Blocked','Không lắp được')}</span><span style="--c:var(--na-bg)">${Li('Not yet','Chưa triển khai')}</span></div><p class="src">${Li('Live store status (current, not by week).','Trạng thái store hiện tại, không theo tuần.')}</p></div><div class="card"><h3>${L('POSM by region','POSM theo vùng')}</h3><div class="sb">${stack(byR,k=>Li(REG[k]?.[0]||k,REG[k]?.[1]||''))}</div></div><div class="card"><h3>${isAll()?L('Sampling days by chain · all weeks','Ngày sampling theo chuỗi · tất cả tuần'):L(`Sampling by chain · week ${w.week}`,`Sampling theo chuỗi · tuần ${w.week}`)}</h3>${ch.length?hbars(ch.map(c=>({l:c[0],v:c[2],t:`${c[2]}/${c[1]} days`,c:c[1]&&c[2]<c[1]?'#c48600':'#2f8a3f'})),Math.max(...ch.map(c=>c[1]),1),{x0:100,label:'Chains'}):`<div class="empty">${L('No chain figures.','Chưa có số theo chuỗi.')}</div>`}</div></div>`;
+  $('#v-dashboard').innerHTML=h;
+}
+
+/* ============ DETAIL ============ */
+function vDetail(w){
+  const P=S.plan;if(!P.types[S.detail])S.detail=P.order[0];
+  const tk=S.detail,T=P.types[tk],ts=w.types?.[tk]||{},s=tStatus(tk,w),el=elapsed(T,w.to);
+  const rail=`<div class="rail">${P.order.map(k=>`<button data-t="${k}" class="${k===tk?'on':''}"><span>${esc(P.types[k].name)}<small>${esc(P.types[k].nameVi||'')}</small></span><span class="dot" style="background:${colorOf(tStatus(k,w).s)}"></span></button>`).join('')}</div>`;
+  let h=`<div class="ph1"><div><h1>${L(esc(T.name),esc(T.nameVi||''))}</h1><p>${BT({en:T.role,vi:T.roleVi})}</p></div><div class="chips">${pill(s.s,s.en,s.vi)}</div></div>`+modeBar(w);
+  h+=`<div class="grid g3"><div class="card"><div class="sub" style="margin:0 0 4px">${Li('Scope','Phạm vi')}</div><b>${BT({en:T.scope,vi:T.scopeVi})}</b></div><div class="card"><div class="sub" style="margin:0 0 4px">${Li('Plan period','Thời gian kế hoạch')}</div><b>${dd(T.start)} – ${dd(T.end)} (${planDays(T)} days)</b><span class="vi">${planDays(T)} ngày</span><div class="bar"><i style="width:${(el||0)*100}%;background:var(--green-2)"></i></div><div style="font-size:12px;color:var(--muted)">${Li(pct(el)+' of the period elapsed at '+dd(w.to),'thời gian đã qua')}${T.dateNote?`<span class="vi">${esc(T.dateNote)}</span>`:''}</div></div><div class="card"><div class="sub" style="margin:0 0 4px">${Li('Status at report date','Trạng thái tại ngày báo cáo')}</div>${pill(s.s,s.en,s.vi)}<div style="font-size:12px;color:var(--muted);margin-top:6px">${Li(STATUS[ts.status]?.[1]||'',STATUS[ts.status]?.[2]||'')}</div></div></div>`;
+  h+=`<div class="grid g4 mt">${T.metrics.map(m=>{const e=evalM(tk,m,w),st=e.ratio!=null?stOf(e.ratio):'na';const v=isAll()?e.c:e.wv;const lines=[];
+    if(!isAll())lines.push(`Lũy kế <span class="vi-i">Cumulative</span>: <b>${fmt(e.c)}</b>`);
+    if(e.plan)lines.push(`KH <span class="vi-i">Plan</span> <b>${fmt(e.plan)}</b> · ${pct(e.done)} done`);
+    if(e.mode==='perday')lines.push(`<b>${fmt(e.actDay,1)}</b>/day vs ${fmt(e.planDay,1)}/day plan${e.fallback?' (cum.)':''}`);else if(e.exp&&e.done!=null&&!m.noPace)lines.push(`Time elapsed ${pct(e.exp)} · pace ${pct(e.ratio)}`);
+    const ly=P.ly?.[tk]?.[m.k];if(isAll()&&ly&&e.c!=null){const y=e.c/ly-1;lines.push(`2025 same period: ${fmt(ly)} · <span class="${y>=0?'up':'down'}">${y>=0?'+':''}${pct(y)}</span>`)}
+    if(v==null&&!isAll()&&e.c!=null)lines.push(Li('No weekly split for this week','Chưa tách được số riêng tuần'));
+    return kpiTile(mLabel(m),v==null?'–':fmt(v,v%1?1:0)+`<small> ${esc(m.u)}</small>`,st,e.mode==='perday'?e.ratio:e.done,lines,e.mode==='perday'?null:e.exp)}).join('')}</div>`;
+  // notes
+  const notes=isAll()?weekList().slice().reverse().map(x=>({n:x.types?.[tk]?.note,wk:x.week})).filter(x=>{const t=tx(x.n);return t.en||t.vi}):[{n:ts.note,wk:w.week}].filter(x=>{const t=tx(x.n);return t.en||t.vi});
+  if(notes.length)h+=`<div class="card mt"><h3>${L('BSC notes','Ghi chú BSC')}</h3><div class="note-list">${notes.map(x=>`<div><b>W${x.wk}</b> · ${BT(x.n)}</div>`).join('')}</div></div>`;
+  if(tk==='sampling'){const ch=chainsFor(),smp=w.types.sampling?.m||{};
+    h+=`<div class="grid g2 mt"><div class="card"><h3>${isAll()?L('By chain · all weeks','Theo chuỗi · tất cả tuần'):L(`By chain · week ${w.week}`,`Theo chuỗi · tuần ${w.week}`)}</h3><div class="tbl"><table><thead><tr><th>${L('Chain','Chuỗi')}</th><th class="r">${L('Days plan','Ngày KH')}</th><th class="r">${L('Days actual','Ngày TT')}</th><th class="r">${L('Stores plan','Store KH')}</th><th class="r">${L('Stores actual','Store TT')}</th><th class="r">%</th></tr></thead><tbody>${ch.map(c=>`<tr><td><b>${esc(c[0])}</b></td><td class="r num">${c[1]}</td><td class="r num">${c[2]}</td><td class="r num">${c[3]}</td><td class="r num">${c[4]}</td><td class="r">${c[1]?pct(c[2]/c[1]):'–'}</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="card"><h3>${L('Conversion quality · cumulative','Chất lượng chuyển đổi · lũy kế')}</h3><div class="tbl"><table><tbody>
+      <tr><td>${L('Buyers / triers','Người mua / dùng thử')}</td><td class="r num"><b>${pct(smp.trial?smp.buyer/smp.trial:null,1)}</b></td><td class="r">Plan 35%</td></tr>
+      <tr><td>${L('New users / triers','Người mới / dùng thử')}</td><td class="r num"><b>${pct(smp.trial?smp.nu/smp.trial:null,1)}</b></td><td class="r">Plan 40% · 2025: 19.7%</td></tr>
+      <tr><td>${L('Triers / reach','Dùng thử / tiếp cận')}</td><td class="r num"><b>${pct(smp.reach?smp.trial/smp.reach:null,1)}</b></td><td class="r">Plan 45.0%</td></tr>
+      <tr><td>${L('Sales per buyer','Doanh số / người mua')}</td><td class="r num"><b>${fmt(smp.buyer?smp.te/smp.buyer:null,3)}</b></td><td class="r">Plan 0.200 T.E</td></tr></tbody></table></div>
+      <p class="src">${Li('The new-user target assumes 40% of triers are new users. Definition and target to be confirmed with Zespri.','Chỉ tiêu new user giả định 40% người thử là người mới. Cần chốt lại định nghĩa và chỉ tiêu với Zespri.')}</p></div></div>`}
+  if(tk==='posm'||tk==='large')h+=storeBlock(tk);
+  const acts=actionsFor().filter(a=>a.type===tk);if(acts.length)h+=`<div class="card mt"><h3>${L('Needs improvement','Cần cải thiện')}</h3>${actionsHtml(acts)}</div>`;
+  const ph=mediaFor(S.media.filter(m=>m.type===tk&&m.kind==='photo')),ly=S.media.filter(m=>m.type===tk&&m.kind==='layout');
+  h+=`<div class="card mt"><h3>${L(`Field photos (${ph.length})`,isAll()?'Ảnh hiện trường · tất cả':'Ảnh hiện trường · tuần '+w.week)}</h3>${ph.length?mediaGrid(ph):`<div class="empty">${L('No photos for this view.','Chưa có ảnh cho phần này.')}</div>`}</div>`;
+  h+=`<div class="card mt"><h3>${L(`Approved layouts (${ly.length})`,'Layout đã duyệt · dùng cho cả chương trình')}</h3>${ly.length?mediaGrid(ly):`<div class="empty">${L('No layouts yet.','Chưa có layout.')}</div>`}</div>`;
+  $('#v-chitiet').innerHTML=`<div class="side">${rail}<div>${h}</div></div>`;
+  $('#v-chitiet').querySelectorAll('.rail button').forEach(b=>b.addEventListener('click',()=>{go('chitiet-'+b.dataset.t)}));
+  bindStoreFilters();bindMedia($('#v-chitiet'));
+}
+const REASONS=[['Retailer asks for paid placement','Retailer yêu cầu thuê vị trí',/thuê vị trí/i],['Awaiting confirmation email','Chờ mail xác nhận',/mail/i],['Category team not yet approved','Ngành hàng chưa cho gắn',/ngành hàng/i],['Store closed','Đóng cửa',/đóng cửa/i],['Store does not sell gold kiwi','Không bán kiwi vàng',/kiwi vàng/i]];
+function storeBlock(tk){const st=allStores(),F=S.storeF,fails=st.filter(x=>x.s==='fail');const cnt=re=>fails.filter(x=>re.test(x.x||'')).length;const other=fails.filter(x=>!REASONS.some(r=>r[2].test(x.x||''))).length;
+  let h=`<div class="grid g12 mt"><div class="card"><h3>${L('Why POSM is blocked','Vì sao chưa lắp được')}</h3>${hbars(REASONS.map(r=>({l:r[0],lv:r[1],v:cnt(r[2]),t:String(cnt(r[2])),c:'#c23d2c'})).concat(other?[{l:'Other',lv:'Lý do khác',v:other,t:String(other),c:'#c23d2c'}]:[]),Math.max(6,...REASONS.map(r=>cnt(r[2]))),{x0:220,label:'Reasons'})}</div>`;
+  h+=`<div class="card"><h3>${L('Store lookup','Tra cứu từng store')}</h3><div class="filters"><select id="sfC"><option value="">All chains · Mọi chuỗi</option>${Object.keys(CHAINS).map(c=>`<option value="${c}" ${F.chain===c?'selected':''}>${CHAINS[c]}</option>`).join('')}</select><select id="sfS"><option value="">All statuses · Mọi trạng thái</option>${Object.entries(PS).map(([k,v])=>`<option value="${k}" ${F.s===k?'selected':''}>${v[1]} · ${v[2]}</option>`).join('')}${tk==='large'?`<option value="large" ${F.s==='large'?'selected':''}>Has large display · Có large display</option>`:''}</select><select id="sfR"><option value="">All regions · Mọi vùng</option>${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${F.r===k?'selected':''}>${v[0]} · ${v[1]}</option>`).join('')}</select><input id="sfQ" placeholder="Search store, province · Tìm store, tỉnh" value="${esc(F.q)}"></div><div class="tbl" style="max-height:380px;overflow-y:auto" id="storeTbl"></div><p class="src" id="storeCnt"></p></div></div>`;
+  return h}
+function fillStores(){const el=$('#storeTbl');if(!el)return;const F=S.storeF,q=F.q.trim().toLowerCase();
+  const L2=allStores().filter(x=>(!F.chain||x.chain===F.chain)&&(!F.s||(F.s==='large'?x.l:x.s===F.s))&&(!F.r||x.r===F.r)&&(!q||(x.n+' '+x.p).toLowerCase().includes(q)));
+  el.innerHTML=`<table><thead><tr><th>${L('Chain','Chuỗi')}</th><th>${L('Store','Store')}</th><th>${L('Province','Tỉnh/TP')}</th><th>Tier</th><th>POSM</th><th>${L('Large','Đảo lớn')}</th><th>${L('Note','Ghi chú')}</th></tr></thead><tbody>${L2.map(x=>`<tr><td>${esc(CHAINS[x.chain]||x.chain)}</td><td><b>${esc(x.n)}</b></td><td>${esc(x.p)}</td><td>${esc(x.t)}</td><td>${PS[x.s]?pill(PS[x.s][0],PS[x.s][1],PS[x.s][2]):esc(x.s)}</td><td>${x.l?pill('ok','Yes','Có'):''}</td><td style="color:var(--muted)">${esc(x.x)}</td></tr>`).join('')}</tbody></table>`;
+  $('#storeCnt').textContent=`${L2.length} / ${allStores().length} stores`}
+function bindStoreFilters(){const m={sfC:'chain',sfS:'s',sfR:'r',sfQ:'q'};Object.entries(m).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.addEventListener('input',()=>{S.storeF[k]=e.value;fillStores()})});fillStores()}
+
+/* ============ media ============ */
+let LB=[],LBi=0;
+function mediaGrid(list){return `<div class="media">${list.map(m=>`<button class="mi ${m.kind==='layout'?'layout':''}" data-mid="${esc(m._id)}"><img src="${esc(mediaSrc(m))}" alt="${esc(tx(m.title).en||tx(m.title).vi)}" loading="lazy"><div><b>${BT(m.title)}</b><span class="m">${esc([m.chain,dd(m.date)].filter(Boolean).join(' · '))}</span></div></button>`).join('')}</div>`}
+function bindMedia(root){const ids=[...root.querySelectorAll('[data-mid]')].map(b=>b.dataset.mid);root.querySelectorAll('[data-mid]').forEach(b=>b.addEventListener('click',()=>{LB=ids.map(id=>S.media.find(m=>m._id===id)).filter(Boolean);LBi=ids.indexOf(b.dataset.mid);openLB()}))}
+function openLB(){const m=LB[LBi];if(!m)return;const t=tx(m.title);$('#lbImg').src=mediaSrc(m);$('#lbImg').alt=t.vi||t.en;$('#lbCap').textContent=[t.vi,t.en,m.chain,m.store,dd(m.date)].filter(Boolean).join(' · ');$('#lb').classList.add('on');$('#lbClose').focus()}
+$('#lbClose').onclick=()=>$('#lb').classList.remove('on');$('#lbPrev').onclick=()=>{LBi=(LBi-1+LB.length)%LB.length;openLB()};$('#lbNext').onclick=()=>{LBi=(LBi+1)%LB.length;openLB()};
+addEventListener('keydown',e=>{if(!$('#lb').classList.contains('on'))return;if(e.key==='Escape')$('#lb').classList.remove('on');if(e.key==='ArrowRight')$('#lbNext').click();if(e.key==='ArrowLeft')$('#lbPrev').click()});
+$('#lb').addEventListener('click',e=>{if(e.target.id==='lb')$('#lb').classList.remove('on')});
+
+function vLib(w){const F=S.lib,P=S.plan,q=F.q.trim().toLowerCase();
+  const base=mediaFor(S.media);
+  const L2=base.filter(m=>(!F.kind||m.kind===F.kind)&&(!F.type||m.type===F.type)&&(!F.chain||m.chain===F.chain)&&(!q||(tx(m.title).en+' '+tx(m.title).vi+' '+m.store+' '+m.chain).toLowerCase().includes(q))).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const chains=[...new Set(S.media.map(m=>m.chain).filter(Boolean))].sort();
+  let h=`<div class="ph1"><div><h1>${L('Photos & layouts','Thư viện ảnh & layout')}</h1><p>${Li(`${base.filter(m=>m.kind==='photo').length} field photos · ${base.filter(m=>m.kind==='layout').length} layouts in this view`,'ảnh hiện trường · layout trong phần đang xem')}</p></div></div>`+modeBar(w);
+  if(!isAll())h+=`<p class="src" style="margin-top:-6px">${Li('Week view shows items dated within the week. Approved layouts are in the Overall view and on each activity page.','Xem theo tuần chỉ hiện ảnh có ngày trong tuần. Layout đã duyệt xem ở Tổng cộng và trong từng loại hình.')}</p>`;
+  h+=`<div class="filters"><select id="lfK"><option value="">Photos and layouts · Ảnh và layout</option><option value="photo" ${F.kind==='photo'?'selected':''}>Field photos · Ảnh hiện trường</option><option value="layout" ${F.kind==='layout'?'selected':''}>Layouts</option></select><select id="lfT"><option value="">All activities · Mọi hạng mục</option>${P.order.map(k=>`<option value="${k}" ${F.type===k?'selected':''}>${esc(P.types[k].name)}</option>`).join('')}</select><select id="lfC"><option value="">All chains · Mọi chuỗi</option>${chains.map(c=>`<option ${F.chain===c?'selected':''}>${esc(c)}</option>`).join('')}</select><input id="lfQ" placeholder="Search · Tìm theo store, tiêu đề" value="${esc(F.q)}"></div>`;
+  h+=L2.length?mediaGrid(L2):`<div class="empty">${L('Nothing matches this view.','Không có ảnh phù hợp.')}</div>`;
+  $('#v-thuvien').innerHTML=h;
+  [['lfK','kind'],['lfT','type'],['lfC','chain']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{S.lib[k]=e.target.value;render()}));
+  $('#lfQ').addEventListener('change',e=>{S.lib.q=e.target.value;render()});
+  bindMedia($('#v-thuvien'))}
+
+function vMarket(w){const M=marketFor();
+  $('#v-thitruong').innerHTML=`<div class="ph1"><div><h1>${L('Market & competitors','Thị trường & đối thủ')}</h1><p>${Li('Observed in store by the field team and FMD.','Field team và FMD quan sát tại điểm bán.')}</p></div></div>`+modeBar(w)+(M.length?`<div class="grid g2">${M.map(m=>`<div class="mk"><div class="t"><div><b>${esc(m.b)}</b><span class="vi">${BT(m.cat).replace(/<span class="vi">/,' · <span class="vi-i">')}</span></div>${pill(m.s||'na',{bad:'Threat',warn:'Watch',na:'For reference'}[m.s||'na'],{bad:'Đe dọa',warn:'Theo dõi',na:'Tham khảo'}[m.s||'na'])}</div><div class="w">${esc(tx(m.w).en)}${tx(m.w).vi?' · '+esc(tx(m.w).vi):''}${isAll()?` · W${m.wk}`:''}</div><p>${BT(m.x)}</p></div>`).join('')}</div>`:`<div class="empty">${L('No market notes in this view.','Chưa có ghi nhận thị trường.')}</div>`)}
+
+/* ============ BSC DATA ENTRY ============ */
+function vInput(){
+  if(!S.canEdit){$('#v-nhaplieu').innerHTML=`<div class="empty">${L('BSC only.','Chỉ BSC có quyền nhập liệu.')}</div>`;return}
+  const tabs=[['week','Weekly report','Báo cáo tuần'],['stores','Stores & POSM','Store & POSM'],['media','Photos & layouts','Ảnh & layout'],['plan','Plan & glossary','Kế hoạch & từ điển']];
+  $('#v-nhaplieu').innerHTML=`<div class="ph1"><div><h1>${L('BSC data entry','BSC nhập liệu')}</h1><p>${Li('Only BSC sees this tab. Zespri only sees weeks you publish.','Chỉ BSC thấy tab này. Khách chỉ thấy tuần đã công bố.')}</p></div></div><div class="subnav">${tabs.map(t=>`<button data-it="${t[0]}" class="${S.inputTab===t[0]?'on':''}">${L(t[1],t[2])}</button>`).join('')}</div><div id="inBody"></div>`;
+  $('#v-nhaplieu').querySelectorAll('[data-it]').forEach(b=>b.addEventListener('click',()=>{S.inputTab=b.dataset.it;render()}));
+  if(!S.plan){$('#inBody').innerHTML=`<div class="empty">${L('No plan.','Chưa có kế hoạch.')}</div>`;return}
+  ({week:inWeek,stores:inStores,media:inMedia,plan:inPlan})[S.inputTab]();
+}
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+function addDays(s,n){if(!s)return'';const d=toD(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+const fld=(id,en,vi,v,type='text',hint='')=>`<div class="f"><label for="${id}">${en}${vi?`<span class="vi">${vi}</span>`:''}</label><input id="${id}" type="${type}" ${type==='number'?'step="any" inputmode="decimal"':''} value="${esc(v??'')}">${hint?`<small>${esc(hint)}</small>`:''}</div>`;
+const tfld=(id,en,vi,v)=>`<div class="f"><label for="${id}">${en}<span class="vi">${vi}</span></label><textarea id="${id}">${esc(v||'')}</textarea></div>`;
+function inWeek(){
+  const all=Object.values(S.weeks).sort((a,b)=>a.week-b.week);
+  if(!S.editWeek){const c=(!isAll()&&selWeek())||all[all.length-1];S.editWeek=c?clone(c):null}
+  const E=S.editWeek,P=S.plan;
+  let h=`<div class="card"><div class="toolbar"><div class="f" style="display:flex;gap:8px;align-items:center"><label for="ewSel" style="margin:0">Editing<span class="vi">Tuần đang sửa</span></label><select id="ewSel" style="width:auto">${all.map(w=>`<option value="${esc(w._id)}" ${E&&E._id===w._id?'selected':''}>Week ${w.week} · ${w.status==='published'?'Published':'Draft'}</option>`).join('')}</select></div><button class="btn sec" id="ewNew">${L('+ New week from latest','Tạo tuần mới từ tuần gần nhất')}</button></div></div>`;
+  if(!E){$('#inBody').innerHTML=h+`<div class="empty mt">${L('No weeks yet.','Chưa có tuần nào.')}</div>`;bindWeekTop();return}
+  h+=`<div class="form mt"><div class="sect"><h4>${L('Week info','Thông tin tuần')} ${pill(E.status==='published'?'ok':'warn',E.status==='published'?'Published':'Draft',E.status==='published'?'Đã công bố':'Nháp')}</h4><div class="fg">${fld('w_week','Week no.','Số tuần',E.week,'number')}${fld('w_from','From','Từ ngày',E.from,'date')}${fld('w_to','To (cut-off)','Đến ngày (chốt số)',E.to,'date')}${fld('w_rep','Report date','Ngày báo cáo',E.reportDate,'date')}${fld('w_author','Prepared by','Người lập',E.author)}</div></div>
+    <div class="sect"><h4>${L('Key points for Zespri','Câu chốt cho khách')}</h4><small style="color:var(--muted)">Keep the first sentence short (shown bold). Write English and Vietnamese. <span class="vi-i">Câu đầu ngắn, in đậm. Viết cả tiếng Anh và tiếng Việt.</span></small>${[0,1,2].map(i=>{const t=tx((E.headline||[])[i]);return `<div class="fg2 mt">${tfld('w_h'+i+'_en',`Point ${i+1} · English`,`Câu ${i+1} · tiếng Anh`,t.en)}${tfld('w_h'+i+'_vi',`Point ${i+1} · Vietnamese`,`Câu ${i+1} · tiếng Việt`,t.vi)}</div>`}).join('')}</div>`;
+  P.order.forEach(tk=>{const T=P.types[tk],ts=E.types?.[tk]||{},n=tx(ts.note);
+    h+=`<div class="sect"><h4>${L(esc(T.name),esc(T.nameVi||'')+' · nhập số lũy kế đến ngày chốt')}</h4><div class="fg"><div class="f"><label for="t_${tk}_status">Status<span class="vi">Trạng thái</span></label><select id="t_${tk}_status">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${ts.status===k?'selected':''}>${v[1]} · ${v[2]}</option>`).join('')}</select></div>
+      ${T.metrics.map(m=>m.fromStores?`<div class="f"><label>${esc(m.l)}<span class="vi">${esc(m.lv||'')}</span></label><input value="${allStores().filter(x=>x.s==='ok').length}" disabled><small>Auto from Stores & POSM on publish</small></div>`:fld(`t_${tk}_${m.k}`,`${esc(m.l)} (${esc(m.u)}) · cumulative`,`${esc(m.lv||'')} · lũy kế`,ts.m?.[m.k],'number',m.plan?`Plan ${fmt(m.plan)}`:'')).join('')}</div>
+      <div class="fg2 mt">${tfld(`t_${tk}_note_en`,'Note for Zespri · English','Ghi chú cho khách · tiếng Anh',n.en)}${tfld(`t_${tk}_note_vi`,'Note · Vietnamese','Ghi chú · tiếng Việt',n.vi)}</div>${tk==='sampling'?chainEditor(ts.chains||[]):''}</div>`});
+  h+=`<div class="sect"><h4>${L('Needs improvement','Cần cải thiện')} <button class="btn sm sec" id="addAct">+ Add · Thêm</button></h4><div class="tbl"><table class="ed-table"><thead><tr><th>Level</th><th>Item (EN)</th><th>Việc (VI)</th><th>Detail (EN)</th><th>Chi tiết (VI)</th><th>Owner</th><th>Due</th><th>Activity</th><th></th></tr></thead><tbody id="actBody">${(E.actions||[]).map((a,i)=>actRow(a,i)).join('')}</tbody></table></div></div>`;
+  h+=`<div class="sect"><h4>${L('Market & competitors','Thị trường & đối thủ')} <button class="btn sm sec" id="addMk">+ Add · Thêm</button></h4><div class="tbl"><table class="ed-table"><thead><tr><th>Brand</th><th>Type (EN)</th><th>Nhóm (VI)</th><th>Level</th><th>Where</th><th>Note (EN)</th><th>Ghi nhận (VI)</th><th></th></tr></thead><tbody id="mkBody">${(E.market||[]).map((m,i)=>mkRow(m,i)).join('')}</tbody></table></div></div>`;
+  h+=`<div class="sect" style="position:sticky;bottom:10px;box-shadow:0 6px 20px rgba(20,38,26,.12)"><div class="toolbar"><button class="btn sec" id="ewSave">${L('Save draft','Lưu nháp')}</button><button class="btn gold" id="ewPub">${E.status==='published'?L('Update published week','Cập nhật bản đã công bố'):L('Publish to Zespri','Công bố cho khách')}</button>${E.status==='published'?`<button class="btn bad" id="ewUnpub">${L('Back to draft','Thu hồi về nháp')}</button>`:''}<span id="ewMsg" style="font-size:12.5px;color:var(--muted)"></span></div><div id="ewVal"></div></div></div>`;
+  $('#inBody').innerHTML=h;bindWeekTop();
+  $('#addAct').onclick=()=>{collectWeek();(S.editWeek.actions=S.editWeek.actions||[]).push({s:'warn',t:{en:'',vi:''},d:{en:'',vi:''},o:'',dl:'',type:''});render()};
+  $('#addMk').onclick=()=>{collectWeek();(S.editWeek.market=S.editWeek.market||[]).push({b:'',cat:{en:'',vi:''},s:'na',w:{en:'',vi:''},x:{en:'',vi:''}});render()};
+  $('#inBody').querySelectorAll('[data-delact]').forEach(b=>b.onclick=()=>{collectWeek();S.editWeek.actions.splice(+b.dataset.delact,1);render()});
+  $('#inBody').querySelectorAll('[data-delmk]').forEach(b=>b.onclick=()=>{collectWeek();S.editWeek.market.splice(+b.dataset.delmk,1);render()});
+  $('#inBody').addEventListener('input',()=>validateWeek());validateWeek();
+  $('#ewSave').onclick=()=>saveWeek(null);$('#ewPub').onclick=()=>saveWeek('published');if($('#ewUnpub'))$('#ewUnpub').onclick=()=>saveWeek('draft');
+}
+function bindWeekTop(){const sel=$('#ewSel');if(sel)sel.onchange=e=>{S.editWeek=clone(S.weeks[e.target.value]);render()};
+  $('#ewNew').onclick=()=>{const all=Object.values(S.weeks).sort((a,b)=>a.week-b.week),last=all[all.length-1];
+    const n=last?clone(last):{types:{},headline:[],actions:[],market:[]};const wk=(last?.week||0)+1;
+    if(S.weeks['W'+wk]){toast('Week '+wk+' already exists');return}
+    delete n._id;delete n.wk;n.week=wk;n.status='draft';n.from=addDays(last?.from,7);n.to=addDays(last?.to,7);n.reportDate=addDays(last?.reportDate,7);n.headline=[{en:'',vi:''},{en:'',vi:''},{en:'',vi:''}];n._id='W'+wk;n._new=true;
+    Object.values(n.types||{}).forEach(t=>t.note={en:'',vi:''});
+    S.editWeek=n;render();toast('Draft week '+wk+' created from last week\'s totals. Update the cumulative figures.')}}
+function chainEditor(ch){const base=['WinMart','Big C / GO!','Co.opMart','AEON','Co.op Extra','Lotte','Emart','Mega'];const rows=ch.length?ch:base.map(b=>[b,0,0,0,0]);
+  return `<div class="tbl mt"><table class="ed-table" id="chainEd"><thead><tr><th>${L('Chain (this week only)','Chuỗi (chỉ tuần này)')}</th><th>Days plan</th><th>Days actual</th><th>Stores plan</th><th>Stores actual</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td><input data-ch="${i}" data-c="0" value="${esc(r[0])}"></td>${[1,2,3,4].map(j=>`<td><input type="number" data-ch="${i}" data-c="${j}" value="${esc(r[j])}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+const actRow=(a,i)=>{const t=tx(a.t),d=tx(a.d);return `<tr data-ar="${i}"><td><select data-k="s">${[['bad','Needs improvement'],['warn','Watch'],['ok','Done']].map(([k,v])=>`<option value="${k}" ${a.s===k?'selected':''}>${v}</option>`).join('')}</select></td><td><input data-k="t_en" value="${esc(t.en)}"></td><td><input data-k="t_vi" value="${esc(t.vi)}"></td><td><input data-k="d_en" value="${esc(d.en)}"></td><td><input data-k="d_vi" value="${esc(d.vi)}"></td><td><input data-k="o" value="${esc(a.o)}"></td><td><input data-k="dl" type="date" value="${esc(a.dl)}"></td><td><select data-k="type"><option value="">General</option>${S.plan.order.map(k=>`<option value="${k}" ${a.type===k?'selected':''}>${esc(S.plan.types[k].name)}</option>`).join('')}</select></td><td><button class="btn sm bad" data-delact="${i}">Delete</button></td></tr>`};
+const mkRow=(m,i)=>`<tr data-mr="${i}"><td><input data-k="b" value="${esc(m.b)}"></td><td><input data-k="cat_en" value="${esc(tx(m.cat).en)}"></td><td><input data-k="cat_vi" value="${esc(tx(m.cat).vi)}"></td><td><select data-k="s">${[['bad','Threat'],['warn','Watch'],['na','Reference']].map(([k,v])=>`<option value="${k}" ${m.s===k?'selected':''}>${v}</option>`).join('')}</select></td><td><input data-k="w_en" value="${esc(tx(m.w).en)}"></td><td><input data-k="x_en" value="${esc(tx(m.x).en)}"></td><td><input data-k="x_vi" value="${esc(tx(m.x).vi)}"></td><td><button class="btn sm bad" data-delmk="${i}">Delete</button></td></tr>`;
+function collectWeek(){const E=S.editWeek,P=S.plan,g=id=>document.getElementById(id);if(!E||!g('w_week'))return E;
+  E.week=+g('w_week').value;E.from=g('w_from').value;E.to=g('w_to').value;E.reportDate=g('w_rep').value;E.author=g('w_author').value;
+  E.headline=[0,1,2].map(i=>({en:g(`w_h${i}_en`).value.trim(),vi:g(`w_h${i}_vi`).value.trim()}));
+  E.types=E.types||{};P.order.forEach(tk=>{const T=P.types[tk],ts=E.types[tk]=E.types[tk]||{};ts.status=g(`t_${tk}_status`).value;ts.note={en:g(`t_${tk}_note_en`).value.trim(),vi:g(`t_${tk}_note_vi`).value.trim()};ts.m=ts.m||{};
+    T.metrics.forEach(m=>{if(m.fromStores)return;const el=g(`t_${tk}_${m.k}`);if(!el)return;const v=el.value.trim();if(v==='')delete ts.m[m.k];else ts.m[m.k]=Number(v)})});
+  const ce=document.querySelectorAll('#chainEd [data-ch]');if(ce.length){const rows=[];ce.forEach(i=>{const r=+i.dataset.ch,c=+i.dataset.c;(rows[r]=rows[r]||[])[c]=c?Number(i.value||0):i.value});E.types.sampling.chains=rows.filter(r=>r&&r[0])}
+  E.actions=[...document.querySelectorAll('#actBody tr')].map(tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value.trim());return {s:o.s,t:{en:o.t_en,vi:o.t_vi},d:{en:o.d_en,vi:o.d_vi},o:o.o,dl:o.dl,type:o.type}});
+  E.market=[...document.querySelectorAll('#mkBody tr')].map(tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value.trim());return {b:o.b,cat:{en:o.cat_en,vi:o.cat_vi},s:o.s,w:{en:o.w_en,vi:''},x:{en:o.x_en,vi:o.x_vi}}});
+  return E}
+function validateWeek(){const E=collectWeek();if(!E)return true;const errs=[],warns=[],m=E.types?.sampling?.m||{};
+  if(m.reach>m.traffic)errs.push('Sampling: reach is higher than traffic · Tiếp cận lớn hơn lượt khách');if(m.trial>m.reach)errs.push('Sampling: trial is higher than reach · Dùng thử lớn hơn tiếp cận');if(m.nu>m.trial)errs.push('Sampling: new users exceed triers · Người mới lớn hơn dùng thử');if(m.buyer>m.trial)errs.push('Sampling: buyers exceed triers · Người mua lớn hơn dùng thử');
+  if(!E.week)errs.push('Week number missing · Thiếu số tuần');if(!E.to)errs.push('Cut-off date missing · Thiếu ngày chốt số');
+  const prev=Object.values(S.weeks).filter(w=>w.week<E.week).sort((a,b)=>b.week-a.week)[0];
+  if(prev)S.plan.order.forEach(tk=>{const a=prev.types?.[tk]?.m||{},b=E.types?.[tk]?.m||{};Object.keys(b).forEach(k=>{if(a[k]!=null&&b[k]<a[k])warns.push(`${S.plan.types[tk].name} · ${k}: lower than week ${prev.week} (${fmt(a[k])}). Cumulative figures should not fall. · Số lũy kế thường không giảm.`)})});
+  if(!(E.headline||[]).some(h=>h.en||h.vi))warns.push('No key points for Zespri yet · Chưa có câu chốt');
+  if((E.headline||[]).some(h=>(h.en&&!h.vi)||(h.vi&&!h.en)))warns.push('A key point is missing its English or Vietnamese version · Có câu chốt thiếu bản tiếng Anh hoặc tiếng Việt');
+  const box=$('#ewVal');if(box)box.innerHTML=errs.map(e=>`<div class="msg e">${esc(e)}</div>`).join('')+warns.map(e=>`<div class="msg w">${esc(e)}</div>`).join('');
+  const pb=$('#ewPub');if(pb)pb.disabled=errs.length>0;return !errs.length}
+async function saveWeek(st){if(st==='published'&&!validateWeek())return;const E=collectWeek();const d=clone(E);delete d._new;
+  const id='W'+d.week;if(E._id&&E._id!==id&&!E._new){toast('Week number of a saved week cannot change. Create a new week instead.');return}
+  d.status=st||d.status||'draft';
+  if(d.status==='published'){d.types=d.types||{};d.types.posm=d.types.posm||{m:{}};d.types.posm.m=d.types.posm.m||{};const st2=allStores();d.types.posm.m.mt_ok=st2.filter(x=>x.s==='ok').length;d.types.posm.m.mt_fail=st2.filter(x=>x.s==='fail').length;d.publishedAt=new Date().toISOString()}
+  delete d._id;$('#ewMsg').textContent='Saving… · Đang lưu…';
+  try{await S.db.doc('weeks/'+id).set(d);S.editWeek={...clone(d),_id:id};$('#ewMsg').textContent='';toast(d.status==='published'?`Week ${d.week} published. Zespri sees it now. · Đã công bố.`:`Week ${d.week} saved as draft. · Đã lưu nháp.`)}
+  catch(e){$('#ewMsg').textContent='';toast(e.code==='invalid_argument'?'No write access. BSC Editor rights needed. · Không có quyền ghi.':'Not saved ('+(e.code||'error')+'). Try again.')}}
+function inStores(){const F=S.storeF,q=F.q.trim().toLowerCase();
+  const L2=allStores().filter(x=>(!F.chain||x.chain===F.chain)&&(!F.s||x.s===F.s)&&(!q||(x.n+' '+x.p).toLowerCase().includes(q)));const dirty=Object.keys(S.storeEdits).length;
+  let h=`<div class="card"><h3>${L('POSM status per store','Trạng thái POSM từng store')}</h3><p class="sub">${Li('Edit and save. Overview and dashboard update immediately.','Sửa rồi bấm Lưu. Bảng tổng và dashboard cập nhật ngay.')}</p>
+  <div class="filters"><select id="isC"><option value="">All chains</option>${Object.keys(S.stores).map(c=>`<option value="${esc(c)}" ${F.chain===S.stores[c].chain?'selected':''}>${esc(CHAINS[S.stores[c].chain]||S.stores[c].chain)}</option>`).join('')}</select><select id="isS"><option value="">All statuses</option>${Object.entries(PS).map(([k,v])=>`<option value="${k}" ${F.s===k?'selected':''}>${v[1]} · ${v[2]}</option>`).join('')}</select><input id="isQ" placeholder="Search store · Tìm store" value="${esc(F.q)}"><button class="btn" id="isSave" ${dirty?'':'disabled'}>Save ${dirty||''} changes · Lưu</button></div>
+  <div class="tbl" style="max-height:560px;overflow-y:auto"><table class="ed-table"><thead><tr><th>Chain</th><th>Store</th><th>Province</th><th>POSM</th><th>Large</th><th>Note / reason · Lý do</th></tr></thead><tbody>${L2.slice(0,400).map(x=>{const k=x.chain+'|'+x.c,e=S.storeEdits[k]||{};const s=e.s??x.s,l=e.l??x.l,n=e.x??x.x;return `<tr data-sk="${esc(k)}"><td>${esc(CHAINS[x.chain]||x.chain)}</td><td><b>${esc(x.n)}</b></td><td>${esc(x.p)}</td><td><select data-f="s">${Object.entries(PS).map(([kk,v])=>`<option value="${kk}" ${s===kk?'selected':''}>${v[1]} · ${v[2]}</option>`).join('')}</select></td><td><input type="checkbox" data-f="l" ${l?'checked':''} aria-label="Large display"></td><td><input data-f="x" value="${esc(n)}" list="reasons"></td></tr>`}).join('')}</tbody></table><datalist id="reasons"><option>Yêu cầu liên hệ MKT thuê vị trí</option><option>Cần mail xác nhận từ hệ thống</option><option>Cần mail xác nhận từ Giám Đốc</option><option>Ngành hàng chưa cho gắn</option><option>Đóng cửa</option><option>Siêu thị không có kiwi vàng</option></datalist></div><p class="src">${L2.length} stores</p></div>`;
+  $('#inBody').innerHTML=h;
+  $('#isC').onchange=e=>{S.storeF.chain=e.target.value?S.stores[e.target.value].chain:'';render()};$('#isS').onchange=e=>{S.storeF.s=e.target.value;render()};$('#isQ').onchange=e=>{S.storeF.q=e.target.value;render()};
+  $('#inBody').querySelectorAll('tr[data-sk]').forEach(tr=>tr.addEventListener('change',ev=>{const f=ev.target.dataset.f;if(!f)return;const k=tr.dataset.sk,e=S.storeEdits[k]=S.storeEdits[k]||{};e[f]=f==='l'?(ev.target.checked?1:0):ev.target.value;const b=$('#isSave');b.disabled=false;b.textContent='Save '+Object.keys(S.storeEdits).length+' changes · Lưu'}));
+  $('#isSave').onclick=async()=>{const byChain={};Object.entries(S.storeEdits).forEach(([k,e])=>{const [c,code]=k.split('|');(byChain[c]=byChain[c]||{})[code]=e});
+    try{for(const [chain,ed] of Object.entries(byChain)){const docId=Object.keys(S.stores).find(id=>S.stores[id].chain===chain);const d=S.stores[docId];const list=d.list.map(x=>ed[x.c]?{...x,...ed[x.c],u:new Date().toISOString().slice(0,10)}:x);await S.db.doc('stores/'+docId).set({chain,list})}
+      S.storeEdits={};toast('Store status saved · Đã lưu');render()}catch(e){toast('Not saved ('+(e.code||'error')+')')}}}
+function inMedia(){const P=S.plan;
+  let h=`<div class="card"><h3>${L('Upload photos or layouts','Tải ảnh hoặc layout lên')}</h3><p class="sub">${Li('Several images at once, up to 20 MB each. Tag activity, chain, store and date so Zespri can find them by week.','Chọn nhiều ảnh cùng lúc. Gắn hạng mục, chuỗi, store, ngày để khách tra theo tuần.')}</p>${S.assets?'':`<div class="msg w">${Li('This account cannot upload files (Editor rights needed).','Tài khoản chưa có quyền tải file.')}</div>`}
+  <div class="fg"><div class="f"><label for="upK">Type<span class="vi">Loại</span></label><select id="upK"><option value="photo">Field photo · Ảnh hiện trường</option><option value="layout">Layout / KV / POSM</option></select></div><div class="f"><label for="upT">Activity<span class="vi">Hạng mục</span></label><select id="upT">${P.order.map(k=>`<option value="${k}">${esc(P.types[k].name)}</option>`).join('')}</select></div>${fld('upC','Chain','Chuỗi','')}${fld('upS','Store','Store','')}${fld('upD','Date','Ngày',latest()?.to||'','date')}${fld('upTe','Title · English','Tiêu đề tiếng Anh','')}${fld('upTv','Title · Vietnamese','Tiêu đề tiếng Việt','')}</div>
+  <div class="f mt"><label for="upF">Images<span class="vi">File ảnh</span></label><input id="upF" type="file" accept="image/*" multiple></div><div class="toolbar mt"><button class="btn" id="upGo" ${S.assets?'':'disabled'}>Upload · Tải lên</button><span id="upMsg" style="font-size:12.5px;color:var(--muted)"></span></div></div>`;
+  h+=`<div class="card mt"><h3>${L(`In the library (${S.media.length})`,'Đã có trong thư viện')}</h3><div class="tbl" style="max-height:480px;overflow-y:auto"><table><thead><tr><th></th><th>Title</th><th>Activity</th><th>Chain · store</th><th>Date</th><th></th></tr></thead><tbody>${S.media.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(m=>`<tr><td><img src="${esc(mediaSrc(m))}" alt="" style="width:72px;height:48px;object-fit:cover;border-radius:6px"></td><td>${BT(m.title)}</td><td>${esc(P.types[m.type]?.name||m.type)}</td><td>${esc([m.chain,m.store].filter(Boolean).join(' · '))}</td><td>${dd(m.date)}</td><td><button class="btn sm bad" data-delm="${esc(m._id)}">Delete</button></td></tr>`).join('')}</tbody></table></div></div>`;
+  $('#inBody').innerHTML=h;
+  $('#upGo').onclick=async()=>{const files=[...$('#upF').files];if(!files.length){toast('Choose at least one image · Chọn ít nhất 1 ảnh');return}const meta={kind:$('#upK').value,type:$('#upT').value,chain:$('#upC').value.trim(),store:$('#upS').value.trim(),date:$('#upD').value};const te=$('#upTe').value.trim(),tv=$('#upTv').value.trim();
+    let ok=0;for(const f of files){$('#upMsg').textContent=`Uploading ${ok+1}/${files.length}…`;try{const a=await S.assets.upload(f);await S.db.collection('media').add({...meta,title:{en:te||meta.store||f.name.replace(/\.[^.]+$/,''),vi:tv},assetId:a.id,at:new Date().toISOString()});ok++}catch(e){toast('Failed: '+f.name)}}
+    $('#upMsg').textContent='';toast(`Uploaded ${ok}/${files.length} · Đã tải lên`)};
+  $('#inBody').querySelectorAll('[data-delm]').forEach(b=>b.onclick=async()=>{const m=S.media.find(x=>x._id===b.dataset.delm);if(!m)return;if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='Click again to delete';return}
+    try{await S.db.doc('media/'+m._id).delete();if(m.assetId&&S.assets)try{await S.assets.delete(m.assetId)}catch(e){}toast('Deleted · Đã xóa')}catch(e){toast('Not deleted')}})}
+function inPlan(){const P=S.plan;
+  let h=`<div class="notice">${L('The plan is the baseline for % and status colours. Change it only after agreeing with Zespri, and note the reason in the weekly report.','Kế hoạch là mốc gốc để tính % và màu trạng thái. Chỉ sửa khi đã chốt với Zespri.')}</div>`;
+  P.order.forEach(tk=>{const T=P.types[tk];h+=`<div class="sect mt"><h4>${L(esc(T.name),esc(T.nameVi||''))}</h4><div class="fg">${fld(`p_${tk}_start`,'Start','Bắt đầu',T.start,'date')}${fld(`p_${tk}_end`,'End','Kết thúc',T.end,'date')}${T.metrics.map(m=>fld(`p_${tk}_${m.k}`,`Plan · ${esc(m.l)} (${esc(m.u)})`,`KH · ${esc(m.lv||'')}`,m.plan,'number')).join('')}</div></div>`});
+  h+=`<div class="toolbar mt"><button class="btn gold" id="pSave">${L('Save plan','Lưu kế hoạch')}</button></div>`;
+  h+=`<div class="card mt"><h3>${L('Glossary','Từ điển chỉ số')}</h3><div class="tbl"><table><thead><tr><th>${L('Metric','Chỉ số')}</th><th>${L('Definition','Định nghĩa')}</th><th>${L('Source','Nguồn')}</th></tr></thead><tbody>${(P.dictionary||[]).map(d=>`<tr><td><b>${esc(d.k)}</b></td><td>${BT(d.d)}</td><td>${BT(d.s)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  $('#inBody').innerHTML=h;
+  $('#pSave').onclick=async()=>{const N=clone(P),g=id=>document.getElementById(id).value;N.order.forEach(tk=>{const T=N.types[tk];T.start=g(`p_${tk}_start`);T.end=g(`p_${tk}_end`);T.metrics.forEach(m=>{const v=g(`p_${tk}_${m.k}`);m.plan=v===''?null:Number(v)})});
+    try{await S.db.doc('app/plan').set(N);toast('Plan saved · Đã lưu kế hoạch')}catch(e){toast('Not saved ('+(e.code||'error')+')')}}}
+
+route();boot();
+</script>
+</body>
+</html>
